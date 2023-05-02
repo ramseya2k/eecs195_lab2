@@ -30,6 +30,19 @@ goal_x = 0
 goal_y = 0
 goal_angle = 0
 
+def update_controller(msg):
+	global goal_x
+	global goal_y
+	global goal_theta
+	global mode
+	goal_x = msg.data[0]
+	goal_y = msg.data[1]
+	goal_theta = msg.data[2]
+	mode = msg.data[3]
+	
+	
+
+
 def applyController():
 	global goal_x
 	global goal_y
@@ -41,11 +54,39 @@ def applyController():
 	global rotation
 
 	while not rospy.is_shutdown():
-		if(mode == 1): 
+		if(mode == 0): # when mode is set to 0, activate the PID for the angular velocity first until robot faces ref point
+			distnation_angle = np.arctan((goal_y - position_y)/(goal_x - position_x))
+			error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation)) # theta
+			while(abs(error_angle) > .05): # activate the angular velocity until robot faces reference point
+				move_cmd.angular.z = min(Kp_gain * error_angle, 0.1)
+				cmd_vel.publish(move_cmd)
+				rospy.loginfo(move_cmd)
+				rate.sleep()
+				distnation_angle = np.arctan((goal_y - position_y)/(goal_x - position_x))
+				error_angle_prev = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation))
+
+			error_distance = sqrt(pow(goal_x - position_x, 2) + pow(goal_y-position_y, 2))
+			while(error_distance > .1): # activate the linear velocity until robot gets to reference point
+				move_cmd.linear.x = min(Kp_gain * error_distance, 0.1)
+				cmd_vel.publish(move_cmd)
+				rospy.loginfo(move_cmd)
+				rate.sleep()
+				error_distance = sqrt(pow(goal_x - position_x, 2) + pow(goal_y-position_y, 2))
+
+			distnation_angle = np.arctan((goal_y - position_y)/(goal_x - position_x))
+			error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation))			
+			while(abs(error_angle) > .05): # activate the angular velocity again to turn the robot towards the final angle
+				move_cmd.angular.z = min(Kp_gain * error_angle, 0.1)
+				cmd_vel.publish(move_cmd)
+				rospy.loginfo(move_cmd)
+				rate.sleep()
+				distnation_angle = np.arctan((goal_y - position_y)/(goal_x - position_x))
+				error_angle_prev = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation))
+		if(mode == 1): # activate both the angular and linear controller simulataneously 
 			error_distance = sqrt(pow(goal_x - position_x, 2) + pow(goal_y-position_y, 2))
 			distnation_angle = np.arctan((goal_y - position_y)/(goal_x - position_x))
 	
-			error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation))
+			error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation)) # theta
 			while(error_distance > 0.1):
 
 	
@@ -59,17 +100,7 @@ def applyController():
 				distnation_angle = np.arctan((goal_y - position_y)/(goal_x - position_x))
 	
 				error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation))
-		if(mode == 0):
-			distnation_angle = np.arctan((goal_y - position_y)/(goal_x - position_x))
-	
-			error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation))
-			error_distance = sqrt(pow(goal_x - position_x, 2) + pow(goal_y-position_y, 2))
-			while(error_distance > 0.1):
-				move_cmd.linear.x = min(Kp_gain * error_distance, 0.1)
-				cmd_vel.publish(move_cmd)
-				rospy.loginfo(move_cmd)
-
-				rate.sleep()
+				
 
 def pose_update(msg):
 	global position_x
@@ -100,12 +131,13 @@ def pose_update(msg):
 if __name__ == '__main__':
 	
 	rospy.init_node('PID_Control_US', anonymous=False)
-	cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=5)
-	rospy.Subscriber('/reference_pose', Float64MultiArray, update_controller)
-	rospy.Subscriber('/gazebo/model_states', ModelStates, pose_update)
+	cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=5) # used to assign linear & angular velocities 
+	rospy.Subscriber('/reference_pose', Float64MultiArray, update_controller) # x, y, theta, mode
+	rospy.Subscriber('/gazebo/model_states', ModelStates, pose_update) # contains information about current robot pose 
 
 	r = rospy.Rate(10)
-
+# this will be used for the input in motion planner 
+'''
 	print("Enter final x position")
 	x_final = input()
 	print("Enter final y position")
@@ -118,7 +150,7 @@ if __name__ == '__main__':
 	goal_x = final_position[0]
 	goal_y = final_position[1]
 	goal_angle = final_position[2]
-
+'''
 	try:
 		print("Running Controller...Please wait")
 		#time.sleep(1)
