@@ -2,9 +2,7 @@ import rospy
 from std_msgs.msg import Float64MultiArray
 from gazebo_msgs.msg import ModelStates
 
-rospy.init_node('Motion_Planner', anonymous=False)
-pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=5) # x, y, theta, mode
-rospy.Subscriber('/gazebo/model_states', ModelStates, pose_update)
+
 arrayToPublish = [] # this will be used to publish information
 motionArray = [] # this will be used inside this file
 flag = True # this will be used to ask for user input first
@@ -31,18 +29,21 @@ def pose_update(msg):
 	goal_theta = motionArray[2]
 	error = sqrt(pow(goal_x - position_x, 2) + pow(goal_y - position_y, 2))
 	if(error > 0.05): # return false to indicate that the target has not reached its goal
-		return False
+		flag =  False
 	if(goal_x != 0) and (error < 0.05): # return true to indicate the target has reached its goal
-		return True  
+		flag = True
 
 if __name__ == '__main__':
+	rospy.init_node('Motion_Planner', anonymous=False)
+	pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=5) # x, y, theta, mode
+	rospy.Subscriber('/gazebo/model_states', ModelStates, pose_update)
 	try:
 		while not rospy.is_shutdown():
 			if flag:
 				send_info() # asks for user input
 				flag = False # set the flag to false to indicate that 
 			else:
-				flag = pose_update # if the position is at the goal, return true, otherwise false, and keep updating
+				continue 
 	
 
 
