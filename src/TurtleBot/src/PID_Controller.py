@@ -8,7 +8,7 @@ from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Float64MultiArray
 import tf
 from math import radians, sqrt, pow, pi, atan2
-from tf.transofmrations import euler_from_quaternion
+from tf.transformations import euler_from_quaternion
 import numpy as np
 import os
 import time 
@@ -52,6 +52,7 @@ def applyController():
 	global position_x
 	global position_y
 	global rotation
+	rate = rospy.Rate(10)
 
 	while not rospy.is_shutdown():
 		if(mode == 0): # when mode is set to 0, activate the PID for the angular velocity first until robot faces ref point
@@ -135,7 +136,14 @@ if __name__ == '__main__':
 	rospy.Subscriber('/reference_pose', Float64MultiArray, update_controller) # x, y, theta, mode
 	rospy.Subscriber('/gazebo/model_states', ModelStates, pose_update) # contains information about current robot pose 
 
-	r = rospy.Rate(10)
+	rate = rospy.Rate(10)
+	try:
+		print("Running controller... please wait...")
+		#time.sleep(1)
+		while not rospy.is_shutdown():
+			rate.sleep(0.1)
+	except:
+		rospy.loginfo("Finished target.")
 # this will be used for the input in motion planner 
 '''
 	print("Enter final x position")
@@ -150,7 +158,7 @@ if __name__ == '__main__':
 	goal_x = final_position[0]
 	goal_y = final_position[1]
 	goal_angle = final_position[2]
-'''
+
 	try:
 		print("Running Controller...Please wait")
 		#time.sleep(1)
@@ -158,7 +166,7 @@ if __name__ == '__main__':
 			rospy.sleep(0.1)
 	except:
 		rospy.loginfo("Finished target.")
-
+'''
 
 
 
