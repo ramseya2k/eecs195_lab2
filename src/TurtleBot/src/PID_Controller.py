@@ -14,7 +14,7 @@ import os
 import time 
 
 
-Kp_gain = 1 
+Kp_gain = 0.1 #1 
 Ki_gain = 0.1
 Kd_gain = 0 
 
@@ -29,6 +29,7 @@ cmd_vel = None
 goal_x = 0
 goal_y = 0
 goal_angle = 0
+mode = 0
 
 def update_controller(msg):
 	global goal_x
@@ -52,6 +53,7 @@ def applyController():
 	global position_x
 	global position_y
 	global rotation
+	global mode
 	rate = rospy.Rate(10)
 
 	while not rospy.is_shutdown():
@@ -141,7 +143,8 @@ if __name__ == '__main__':
 		print("Running controller... please wait...")
 		#time.sleep(1)
 		while not rospy.is_shutdown():
-			rate.sleep(0.1)
+			#rate.sleep(10)
+			time.sleep(2)
 	except:
 		rospy.loginfo("Finished target.")
 # this will be used for the input in motion planner 
