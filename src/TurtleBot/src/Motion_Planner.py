@@ -4,6 +4,31 @@ from std_msgs.msg import Float64MultiArray
 from gazebo_msgs.msg import ModelStates
 from math import sqrt
 
+def send_info(): # sends info & publishes
+	x_start = float(raw_input("Enter start of X position:\n"))
+	y_start = float(raw_input("Enter start of Y position:\n"))
+	x_goal = float(raw_input("Enter goal of X position:\n"))
+	y_goal = float(raw_input("Enter goal of Y position:\n"))
+	arrayToPublish = [x_start, y_start, x_goal, y_goal]
+	arrayToPublish = Float64MultiArray(data=arrayToPublish)
+	pub.publish(arrayToPublish)
+
+def check_if_done():
+	# subscribe to the trajectory, so what i was thinking was that maybe once the robot reaches its goal, check if the coordinates are equal to the x goal and y goal and if they are, then finish? or do error < 0.5 like the other PID controller
+
+
+if __name__ == '__main__':
+	rospy.init_node('Motion_Planner', anonymous=False)
+	pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
+	rospy.Subscriber('/trajectory', Float64MultiArray,)
+	try:
+		while not rospy.is_shutdown():
+	
+	except rospy.ROSInterruptException:
+		pass
+
+'''
+# THIS IS FOR PART 1 OF THE ASSIGNMENT 
 arrayToPublish = [] # this will be used to publish information
 motionArray = [] # this will be used inside this file
 flag = True # this will be used to ask for user input first
@@ -60,3 +85,4 @@ if __name__ == '__main__':
 				continue # this will run pose_update(msg)
 	except rospy.ROSInterruptException:
 		pass
+'''
