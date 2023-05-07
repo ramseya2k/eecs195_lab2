@@ -11,10 +11,10 @@ from cv_bridge import CvBridge
 rospy.init_node('map_server', anonymous=False)
 pub = rospy.Publisher('/map', OccupancyGrid, queue_size=10)
 
-map_metadata = None
+global map_metadata
 
 with open(sys.argv[1], 'r') as f:
-	global map_metadata
+	#global map_metadata
 	map_metadata = load(f)
 	#print(map_metadata)
 	
@@ -41,22 +41,23 @@ def publish_map():
 	
 	occupancy_grid = []
 	for row in image:
-		row_data = [] #change this to something else then if occupancy grid of values doesn't work
+		raw_data = [] #change this to something else then if occupancy grid of values doesn't work
 		for pixel in row:
 			if pixel == 0: # black
-				occupancy_grid.append(100) # occupied space 
+				#occupancy_grid.append(100) # occupied space 
 				raw_data.append(100) # occupied space
 			elif pixel == 255: 
-				occupancy_grid.append(0) # free space 
+				#occupancy_grid.append(0) # free space 
 				raw_data.append(0) # free space 
 			else:
 				#occupancy_grid.append(-1) # unknown space
 				raw_data.append(-1) # unknown space 
-		occupancy_grid.append(row_data) # comment this out if any issues occur
+		occupancy_grid.append(raw_data) # comment this out if any issues occur
 	grid.data = [item for sublist in occupancy_grid for item in sublist] # flatten the grid
 	
 	# publish the occupancy grid message
 	pub.publish(grid)
+	
 	
 if __name__ == '__main__':
 	try:
