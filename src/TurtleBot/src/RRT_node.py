@@ -20,27 +20,33 @@ def map_update(information): # references
 	global current_origin
 	global current_data
 	
-	current_map = [[0 for j in range(information.info.height)] for i in range(information.info.width)]
 	current_resolution = information.info.resolution
 	current_origin = information.info.origin
 	current_data = information.data
+	current_map =  np.reshape(information.data, (information.info.width, information.info.height))#[[0 for j in range(information.info.height)] for i in range(information.info.width)]
 	
 # for start_goal	
 def start_goal_callback(msg):
 	global current_map
-	while not rospy.is_shutdown():
-		x_start_real = msg.data[0]
-		y_start_real = msg.data[1]
+	#while not rospy.is_shutdown():
+	x_start_real = msg.data[0]
+	y_start_real = msg.data[1]
 	
-		x_goal_real = msg.data[2]
-		y_goal_real = msg.data[3]
+	x_goal_real = msg.data[2]
+	y_goal_real = msg.data[3]
 	
-		x_start_index, y_start_index = get_index_from_coordinates(x_start_real, y_start_real)
-		x_goal_index, y_goal_index = get_index_from_coordinates(x_goal_real, y_goal_real)
-		start, goal = ([x_start_index, y_start_index], [x_goal_index, y_goal_index])
-		path = rrt.find_path_RRT(start, goal, cv2.cvtColor(rrt.map_img(current_map), cv2.COLOR_GRAY2BGR)[::-1])
-		pub.publish(path)
-		rospy.loginfo(path)
+	x_start_index, y_start_index = get_index_from_coordinates(x_start_real, y_start_real)
+	x_goal_index, y_goal_index = get_index_from_coordinates(x_goal_real, y_goal_real)
+	start, goal = ([x_start_index, y_start_index], [x_goal_index, y_goal_index])
+	path, graph = rrt.find_path_RRT(start, goal, current_map)
+	#rospy.loginfo(path)
+	result = []
+	for i in range(len(path)):
+		x, y = get_coordinates_from_index(path[i][0], path[i][1])
+		result.append(x)
+		result.append(y)
+	pub.publish(Float64MultiArray(data=result))
+	print("done")
 	
 	
 	
@@ -50,29 +56,28 @@ def start_goal_callback(msg):
 def get_index_from_coordinates(x, y):
 	global current_origin
 	global current_resolution
-	x = map_origin.position.x + int(round(x/current_resolution))
-	y = map_origin.position.y + int(round(y/current_resolution))
+	x = current_origin.position.x + int(round(x/current_resolution))
+	y = current_origin.position.y + int(round(y/current_resolution))
 	return x, y
-	
-	
-def main():
-	rospy.init_node('RRT_NODE', anonymous=False)
-	# publisher 
-	pub = rospy.Publisher('/trajectory', Float64MultiArray, queue_size=10)
-	rate = rospy.Rate(10)
-	while not rospy.is_shutdown():
+
+
+def get_coordinates_from_index(x, y):
+	global current_origin
+	global current_resolution
+	x = current_origin.position.x + (x + 0.5) * current_resolution
+	y = current_origin.position.y + (y + 0.5) * current_resolution
+	return x, y
+if __name__ == '__main__':
+	try:
+		rospy.init_node('RRT_NODE', anonymous=False)
+		#rate = rospy.Rate(10)
 		# subscribers 
 		rospy.Subscriber('/map', OccupancyGrid, map_update)
 		rospy.Subscriber('/start_goal', Float64MultiArray, start_goal_callback)
-		rate.sleep()
-		
-
-if __name__ == '__main__':
-
-	
-	try:
+		pub = rospy.Publisher('/trajectory', Float64MultiArray, queue_size=10)		
 		print("Running...\n")
-		main()
+		while not rospy.is_shutdown():
+			rospy.sleep(0.1)
 
 	except rospy.ROSInterruptException:
 		pass
