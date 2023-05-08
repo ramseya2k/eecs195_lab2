@@ -18,7 +18,7 @@ def send_info(): # sends info & publishes
 def trajectory_callback(msg):
 	if msg.data[-1] == 1.0:
 		rospy.loginfo("Robot has reached the target.\n")
-		break
+		return
 
 def main():
 	rospy.init_node('Motion_Planner', anonymous=False)

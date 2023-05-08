@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import Float64MultiArray
-from geometry_msgs.msg improt Twist
+from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
 import rrt 
 from nav_msgs.msg import OccupancyGrid
@@ -11,7 +11,7 @@ import tf
 import random
 import numpy as np
 import math
-from math import sqrt, sin, cos, atan2, ceil floor
+from math import sqrt, sin, cos, atan2, ceil, floor
 
 
 def map_update(information): # references
@@ -19,7 +19,8 @@ def map_update(information): # references
 	global current_resolution
 	global current_origin
 	global current_data
-	current_map = [information.info.height][information.info.width] # height & width
+	
+	current_map = [[0 for j in range(information.info.height)] for i in range(information.info.width)]
 	current_resolution = information.info.resolution
 	current_origin = information.info.origin
 	current_data = information.data
@@ -54,20 +55,24 @@ def get_index_from_coordinates(x, y):
 	return x, y
 	
 	
-
-
-if __name__ == '__main__':
-	rospy.init_node('RRT_NODE', anonymouse=False)
-
+def main():
+	rospy.init_node('RRT_NODE', anonymous=False)
 	# publisher 
 	pub = rospy.Publisher('/trajectory', Float64MultiArray, queue_size=10)
+	rate = rospy.Rate(10)
+	while not rospy.is_shutdown():
+		# subscribers 
+		rospy.Subscriber('/map', OccupancyGrid, map_update)
+		rospy.Subscriber('/start_goal', Float64MultiArray, start_goal_callback)
+		rate.sleep()
+		
 
-	# subscribers 
-	rospy.Subscriber('/map', OccupancyGrid, map_update)
-	rospy.Subscriber('/start_goal', Float64MultiArray, start_goal_callback)
+if __name__ == '__main__':
+
 	
 	try:
 		print("Running...\n")
-		rate.sleep(10)
+		main()
+
 	except rospy.ROSInterruptException:
 		pass
