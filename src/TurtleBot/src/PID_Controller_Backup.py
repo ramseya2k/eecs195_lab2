@@ -31,21 +31,14 @@ goal_y = 0
 goal_angle = 0
 mode = 0
 
-error_distance_prev = 0
-error_angle_prev = 0
-
-P = 0
-I = 0
-D = 0
-
 def update_controller(msg):
 	global goal_x
 	global goal_y
-	global goal_angle
+	global goal_theta
 	global mode
 	goal_x = msg.data[0]
 	goal_y = msg.data[1]
-	goal_angle = msg.data[2]
+	goal_theta = msg.data[2]
 	mode = msg.data[3]
 	
 	
@@ -94,39 +87,22 @@ def applyController():
 				error_angle_prev = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle-rotation))
 		if(mode == 1): # activate both the angular and linear controller simulataneously 
 			error_distance = sqrt(pow(goal_x - position_x, 2) + pow(goal_y - position_y, 2))
-			distnation_angle = np.arctan2(goal_y - position_y, goal_x - position_x)
+			distnation_angle = np.arctan((goal_y - position_y) / (goal_x - position_x))
 			error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle - rotation))
-			
-			# calculate pid
-			P = Kp_gain * error_distance
-			I = I + Ki_gain * error_distance * 0.1
-			D = Kd_gain * (error_distance - error_distance_prev) / 0.1
-			output_distance = P + I + D
-			
-			
-			P = Kp_gain * error_angle
-			I = I + Ki_gain * error_angle * 0.1
-			D = Kd_gain * (error_angle - error_angle_prev) / 0.1
-			output_angle = P + I + D
-			
-			move_cmd.linear.x = min(output_distance, 0.5)
-			move_cmd.angular.z = min(output_angle, 0.5)
-			
-			
-			error_distance_prev = error_distance
-			error_angle_prev = error_angle 
-			
-			cmd_vel.publish(move_cmd)
-			rospy.loginfo(move_cmd)
-			
-			if error_distance < 0.05:
-				print("Target achieved")
-				move_cmd.linear.x = 0
-				move_cmd.angular.z = 0
+			while error_distance > 0.1:
+				
+				# update commands
+				move_cmd.linear.x = min(Kp_gain * error_distance, 0.1)
+				move_cmd.angular.z = min(Kp_gain * error_angle, 0.1)
 				cmd_vel.publish(move_cmd)
-		rate.sleep()
-			
-	
+				rospy.loginfo(move_cmd)
+				
+				rate.sleep()
+				
+				# update error_distance and error_angle
+				error_distance = sqrt(pow(goal_x - position_x, 2) + pow(goal_y - position_y, 2))
+				distnation_angle = np.arctan((goal_y - position_y) / (goal_x - position_x))
+				error_angle = np.arctan2(np.sin(distnation_angle - rotation), np.cos(distnation_angle - rotation))
 				
 
 def pose_update(msg):
@@ -147,8 +123,8 @@ def pose_update(msg):
 
 	error = sqrt(pow(goal_x - position_x, 2) + pow(goal_y - position_y, 2))
 	#print(error)
-	#if (error > 0.05):
-	#	applyController()
+	if (error > 0.05):
+		applyController()
 	if (goal_x != 0) and (error < 0.05):
 		print("Target achieved")
 		move_cmd.linear.x = 0
