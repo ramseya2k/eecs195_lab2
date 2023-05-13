@@ -94,7 +94,7 @@ def pose_update(msg):
 
 if __name__ == '__main__':
 	try:
-		rospy.Subscriber('/gazebo/Model_states', ModelStates, pose_update)
+		rospy.Subscriber('/gazebo/model_states', ModelStates, pose_update)
 		main()
 	except rospy.ROSInterruptException:
 		pass
