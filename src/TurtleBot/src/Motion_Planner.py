@@ -82,15 +82,16 @@ def pose_update(msg):
 	position_x = msg.pose[1].position.x
 	position_y = msg.pose[1].position.y
 	rotation = msg.pose[1].orientation.z
-
-	goal_x = motionArray[0]
-	goal_y = motionArray[1]
-	goal_theta = motionArray[2]
-	error = sqrt(pow(goal_x - position_x, 2) + pow(goal_y - position_y, 2))
-	print(error)
-	if(goal_x != 0) and (error < 0.05): # break to exit out of the loop and ask for input
-		print("goal reached")
-		prompt_flag = True
+	if motionArray:
+		goal_x = motionArray[0]
+		goal_y = motionArray[1]
+		goal_theta = motionArray[2]
+		error = sqrt(pow(goal_x - position_x, 2) + pow(goal_y - position_y, 2))
+		print(error)
+		if(goal_x != 0) and (error < 0.05): # break to exit out of the loop and ask for input
+			print("goal reached")
+			prompt_flag = True
+			motionArray = [] # reset to obtain new goal
 
 if __name__ == '__main__':
 	try:
