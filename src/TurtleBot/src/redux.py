@@ -83,10 +83,10 @@ class PID:
         return ud_linear
 
     def integral_linear_vel(self, goal_pose):
-		integral_linear_vel = self.integral_prior_linear + self.euclidean_distance(goal_pose) * self.time_discr
+        integral_linear_vel = self.integral_prior_linear + self.euclidean_distance(goal_pose) * self.time_discr
         # update the integral prior 
         ui_linear = self.Ki_gain_linear * integral_linear_vel
-		self.integral_prior_linear = integral_linear_vel
+	self.integral_prior_linear = integral_linear_vel
         return ui_linear
 
     def proportional_angular_vel(self, goal_pose): 
