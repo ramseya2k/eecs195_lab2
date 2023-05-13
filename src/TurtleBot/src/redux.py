@@ -102,11 +102,11 @@ class PID:
         return ud_angular
 
     def integral_angular_vel(self, goal_pose):
-		error_angle = self.steering_angle(goal_pose) - self.pose_theta
-		integral_angular_vel = self.integral_prior_angular +error_angle * self.time_discr
-		ui_angular = self.Ki_gain_angular * integral_angular_vel
+        error_angle = self.steering_angle(goal_pose) - self.pose_theta
+        integral_angular_vel = self.integral_prior_angular +error_angle * self.time_discr
+        ui_angular = self.Ki_gain_angular * integral_angular_vel
         # update the integral prior 
-		self.integral_prior_angular = integral_angular_vel
+        self.integral_prior_angular = integral_angular_vel
         return ui_angular
 
     def PID_controller_linear(self, goal_pose):
@@ -125,25 +125,25 @@ class PID:
 
     def move2goal(self):
         while not rospy.is_shutdown():
-			vel_msg = Twist()
-			if self.mode == 1:
-				while self.euclidean_distance(goal_pose) >= .05:
-					vel_msg.linear.x = self.PID_controller_linear(goal_pose)
-                	vel_msg.angular.z = self.PID_controller_angular(goal_pose)
-                	self.velocity_publisher.publish(vel_msg)
-                	self.rate.sleep()
-				vel_msg.linear.x = 0
-				vel_msg.angular.z = 0
-				self.velocity_publisher.publish(vel_msg)
-				self.error_prior_linear = 0
-				self.integral_prior_linear = 0
-				self.error_prior_angular = 0
-				self.integral_prior_angular = 0
-			else:
-				rospy.loginfo("Waiting for input...\n")
-				while self.mode == 0:
-					if self.mode == 1:
-						break
+                vel_msg = Twist()
+                if self.mode == 1:
+                        while self.euclidean_distance(goal_pose) >= .05:
+                                vel_msg.linear.x = self.PID_controller_linear(goal_pose)
+                	        vel_msg.angular.z = self.PID_controller_angular(goal_pose)
+                	        self.velocity_publisher.publish(vel_msg)
+                	        self.rate.sleep()
+			vel_msg.linear.x = 0
+			vel_msg.angular.z = 0
+			self.velocity_publisher.publish(vel_msg)
+			self.error_prior_linear = 0
+			self.integral_prior_linear = 0
+			self.error_prior_angular = 0
+			self.integral_prior_angular = 0
+		else:
+		        rospy.loginfo("Waiting for input...\n")
+			while self.mode == 0:
+			        if self.mode == 1:
+				        break
 if __name__ == '__main__':
     try:
         x = PID()
