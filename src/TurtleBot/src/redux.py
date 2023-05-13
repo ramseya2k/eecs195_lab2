@@ -133,51 +133,38 @@ class PID:
 
         while not rospy.is_shutdown():
 
-            """Moves the turtle to the goal."""
-  
-
-            # Get the input from the user.
-            goal_pose_x = float(input("Set your x goal: "))
-            goal_pose_y = float(input("Set your y goal: "))
-            goal_pose_theta = float(input("Set your theta goal: "))
-
-            goal_pose = [goal_pose_x, goal_pose_y, goal_pose_theta]
-
-        
-            distance_tolerance = 0.05
-
             vel_msg = Twist()
-
-            while self.euclidean_distance(goal_pose) >= distance_tolerance:
+			if self.mode == 1:
+            	while self.euclidean_distance(goal_pose) >= .05:
 
                 # PID controller.
                 
                 # Linear velocity in the x-axis.
-                vel_msg.linear.x = self.PID_controller_linear(goal_pose) 
+                	vel_msg.linear.x = self.PID_controller_linear(goal_pose) 
                 
 
 
                 # Angular velocity in the z-axis.
-                vel_msg.angular.z = self.PID_controller_angular(goal_pose)
+                	vel_msg.angular.z = self.PID_controller_angular(goal_pose)
                 
 
                 # Publishing our vel_msg
-                self.velocity_publisher.publish(vel_msg)
+                	self.velocity_publisher.publish(vel_msg)
 
                 # Publish at the desired rate.
-                self.rate.sleep()
+                	self.rate.sleep()
 
             # Stopping our robot after the movement is over.
-            vel_msg.linear.x = 0
-            vel_msg.angular.z = 0
-            self.velocity_publisher.publish(vel_msg)
+				vel_msg.linear.x = 0
+				vel_msg.angular.z = 0
+				self.velocity_publisher.publish(vel_msg)
 
             # set error priors for linear and angular to 0
-            self.error_prior_linear = 0
-            self.integral_prior_linear = 0
+				self.error_prior_linear = 0
+				self.integral_prior_linear = 0
 
-            self.error_prior_angular = 0
-            self.integral_prior_angular = 0
+				self.error_prior_angular = 0
+				self.integral_prior_angular = 0
             
 
    
