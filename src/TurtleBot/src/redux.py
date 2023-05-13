@@ -75,12 +75,12 @@ class PID:
 
     def proportional_linear_vel(self, goal_pose):
         return min(self.Kp_gain_linear * self.euclidean_distance(goal_pose), 0.1)
- 
-	def derivative_linear_vel(self, goal_pose):
-    	derivate_linear_vel = (self.euclidean_distance(goal_pose) - self.error_prior_linear) / self.time_discr
-    	ud_linear = self.Kd_gain_linear * derivate_linear_vel
-    	self.error_prior_linear = self.euclidean_distance(goal_pose)  # update the error prior 
-    	return ud_linear
+
+    def derivative_linear_vel(self, goal_pose):
+        derivate_linear_vel = (self.euclidean_distance(goal_pose) - self.error_prior_linear) / self.time_discr
+        ud_linear = self.Kd_gain_linear * derivate_linear_vel
+        self.error_prior_linear = self.euclidean_distance(goal_pose)  # update the error prior 
+        return ud_linear
 
     def integral_linear_vel(self, goal_pose):
 		integral_linear_vel = self.integral_prior_linear + self.euclidean_distance(goal_pose) * self.time_discr
