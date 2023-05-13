@@ -25,7 +25,7 @@ class PID:
         # A subscriber to the topic '/gazebo/model_states'. self.update_pose is called
         # when a message of type ModelStates is received.
         rospy.Subscriber('/gazebo/model_states', ModelStates, self.update_pose)
-		rospy.Subscriber('/reference_pose', Float64MultiArray, self.update_goals)
+        rospy.Subscriber('/reference_pose', Float64MultiArray, self.update_goals)
         # AGENT'S POSE in the gazebo environment
         self.pose_x = 0
         self.pose_y = 0
@@ -60,11 +60,11 @@ class PID:
         self.pose_y = round(data.pose[1].position.y, 4)
         self.pose_theta = data.pose[1].orientation.z
 	
-	def update_goals(self, data):
+    def update_goals(self, data):
         self.goal_x = round(data.pose[1], 4)
         self.goal_y = round(data.data[1], 4)
         self.goal_theta = data.data[2]
-		self.mode = data.data[3]
+        self.mode = data.data[3]
 
     def euclidean_distance(self, goal_pose):
         """Euclidean distance between current pose and the goal."""
