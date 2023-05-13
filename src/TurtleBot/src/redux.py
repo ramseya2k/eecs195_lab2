@@ -56,15 +56,11 @@ class PID:
 
 
     def update_pose(self, data):
-        """Callback function which is called when a new message of type ModelStates is
-        received by the subscriber."""
-       
         self.pose_x = round(data.pose[1].position.x, 4)
         self.pose_y = round(data.pose[1].position.y, 4)
         self.pose_theta = data.pose[1].orientation.z
 	
 	def update_goals(self, data):
-       
         self.goal_x = round(data.pose[1], 4)
         self.goal_y = round(data.data[1], 4)
         self.goal_theta = data.data[2]
@@ -85,7 +81,7 @@ class PID:
 		ud_linear = self.Kd_gain_linear * derivate_linear_vel
 		self.error_prior_linear = self.euclidean_distance(goal_pose)
         # update the error prior 
-        return ud_linear
+		return ud_linear
 
     def integral_linear_vel(self, goal_pose):
 		integral_linear_vel = self.integral_prior_linear + self.euclidean_distance(goal_pose) * self.time_discr
