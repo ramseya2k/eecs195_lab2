@@ -132,21 +132,18 @@ class PID:
     def move2goal(self):
 
         while not rospy.is_shutdown():
-
-            vel_msg = Twist()
+			vel_msg = Twist()
 			if self.mode == 1:
-            			while self.euclidean_distance(goal_pose) >= .05:
-
+				while self.euclidean_distance(goal_pose) >= .05:
                 # PID controller.
-                
                 # Linear velocity in the x-axis.
 					vel_msg.linear.x = self.PID_controller_linear(goal_pose)
                 # Angular velocity in the z-axis.
-                			vel_msg.angular.z = self.PID_controller_angular(goal_pose)
+                	vel_msg.angular.z = self.PID_controller_angular(goal_pose)
                 # Publishing our vel_msg
-                			self.velocity_publisher.publish(vel_msg)
+                	self.velocity_publisher.publish(vel_msg)
                 # Publish at the desired rate.
-                			self.rate.sleep()
+                	self.rate.sleep()
 
             # Stopping our robot after the movement is over.
 				vel_msg.linear.x = 0
@@ -159,6 +156,11 @@ class PID:
 
 				self.error_prior_angular = 0
 				self.integral_prior_angular = 0
+			else:
+				rospy.loginfo("Waiting for input...\n")
+					while self.mode == 0:
+						if self.mode == 1:
+							break
             
 
    
