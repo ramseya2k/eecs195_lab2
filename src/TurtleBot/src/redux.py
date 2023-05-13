@@ -33,7 +33,7 @@ class PID:
         self.goal_x = 0
         self.goal_y = 0
         self.goal_theta = 0
-        self.goal_mode = 0
+        self.mode = 0
 
         # Time discretization for the PID
         self.time_discr = 0.001
@@ -72,8 +72,7 @@ class PID:
 
     def euclidean_distance(self, goal_pose):
         """Euclidean distance between current pose and the goal."""
-        return sqrt(pow((goal_pose[0] - self.pose_x), 2) +
-                    pow((goal_pose[1] - self.pose_y), 2))
+        return sqrt(pow((goal_pose[0] - self.pose_x), 2) + pow((goal_pose[1] - self.pose_y), 2))
 
     def steering_angle(self, goal_pose):
         return atan2(goal_pose[1] - self.pose_y, goal_pose[0] - self.pose_x)
@@ -82,17 +81,17 @@ class PID:
         return min(self.Kp_gain_linear * self.euclidean_distance(goal_pose), 0.1)
  
     def derivative_linear_vel(self, goal_pose):
-	derivate_linear_vel = (self.euclidean_distance(goal_pose) - self.error_prior_linear) / self.time_discr
-	ud_linear = self.Kd_gain_linear * derivate_linear_vel
-	self.error_prior_linear = self.euclidean_distance(goal_pose)
+		derivate_linear_vel = (self.euclidean_distance(goal_pose) - self.error_prior_linear) / self.time_discr
+		ud_linear = self.Kd_gain_linear * derivate_linear_vel
+		self.error_prior_linear = self.euclidean_distance(goal_pose)
         # update the error prior 
         return ud_linear
 
     def integral_linear_vel(self, goal_pose):
-	integral_linear_vel = self.integral_prior_linear + self.euclidean_distance(goal_pose) * self.time_discr
+		integral_linear_vel = self.integral_prior_linear + self.euclidean_distance(goal_pose) * self.time_discr
         # update the integral prior 
         ui_linear = self.Ki_gain_linear * integral_linear_vel
-	self.integral_prior_linear = integral_linear_vel
+		self.integral_prior_linear = integral_linear_vel
         return ui_linear
 
     def proportional_angular_vel(self, goal_pose): 
@@ -100,19 +99,19 @@ class PID:
         return min(self.Kp_gain_angular * error_angle, 0.1)
 
     def derivative_angular_vel(self, goal_pose):
-	error_angle = self.steering_angle(goal_pose) - self.pose_theta
-	derivative_angular_vel = (error_angle - self.error_prior_angular) / self.time_discr
-	ud_angular = self.Kd_gain_angular * derivative_angular_vel
+		error_angle = self.steering_angle(goal_pose) - self.pose_theta
+		derivative_angular_vel = (error_angle - self.error_prior_angular) / self.time_discr
+		ud_angular = self.Kd_gain_angular * derivative_angular_vel
         # update the error prior
-	self.error_prior_angular = error_angle 
+		self.error_prior_angular = error_angle 
         return ud_angular
 
     def integral_angular_vel(self, goal_pose):
-	error_angle = self.steering_angle(goal_pose) - self.pose_theta
-	integral_angular_vel = self.integral_prior_angular +error_angle * self.time_discr
-	ui_angular = self.Ki_gain_angular * integral_angular_vel
+		error_angle = self.steering_angle(goal_pose) - self.pose_theta
+		integral_angular_vel = self.integral_prior_angular +error_angle * self.time_discr
+		ui_angular = self.Ki_gain_angular * integral_angular_vel
         # update the integral prior 
-	self.integral_prior_angular = integral_angular_vel
+		self.integral_prior_angular = integral_angular_vel
         return ui_angular
 
     def PID_controller_linear(self, goal_pose):
@@ -130,42 +129,26 @@ class PID:
         return pid_control_angular
 
     def move2goal(self):
-
         while not rospy.is_shutdown():
 			vel_msg = Twist()
 			if self.mode == 1:
 				while self.euclidean_distance(goal_pose) >= .05:
-                # PID controller.
-                # Linear velocity in the x-axis.
 					vel_msg.linear.x = self.PID_controller_linear(goal_pose)
-                # Angular velocity in the z-axis.
                 	vel_msg.angular.z = self.PID_controller_angular(goal_pose)
-                # Publishing our vel_msg
                 	self.velocity_publisher.publish(vel_msg)
-                # Publish at the desired rate.
                 	self.rate.sleep()
-
-            # Stopping our robot after the movement is over.
 				vel_msg.linear.x = 0
 				vel_msg.angular.z = 0
 				self.velocity_publisher.publish(vel_msg)
-
-            # set error priors for linear and angular to 0
 				self.error_prior_linear = 0
 				self.integral_prior_linear = 0
-
 				self.error_prior_angular = 0
 				self.integral_prior_angular = 0
 			else:
 				rospy.loginfo("Waiting for input...\n")
-					while self.mode == 0:
-						if self.mode == 1:
-							break
-            
-
-   
-            
-
+				while self.mode == 0:
+					if self.mode == 1:
+						break
 if __name__ == '__main__':
     try:
         x = PID()
