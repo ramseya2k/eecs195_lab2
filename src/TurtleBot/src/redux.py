@@ -33,7 +33,7 @@ class PID:
         self.goal_x = 0
         self.goal_y = 0
         self.goal_theta = 0
-        self.mode = 0
+        self.mode = None
 
         # Time discretization for the PID
         self.time_discr = 0.001
@@ -126,7 +126,22 @@ class PID:
     def move2goal(self):
         while not rospy.is_shutdown():
                 vel_msg = Twist()
-                if self.mode == 1:
+		if self.mode == 0: # activate angular, linear, and then angular
+			vel_msg.angular.z = self.PID_controller_angular() # faces the reference point 
+			self.velocity_publisher.publish(vel_msg)
+			while self.euclidean_distance() >= .05:
+				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
+				self.velocity_publisher.publish(vel_msg)
+			vel_msg.angular.z = self.PID_Controller_angular() # make it turn towards the goal 
+			self.velocity_publisher.publish(vel_msg)
+			vel_msg.linear.x = 0
+			vel_msg.angular.z = 0
+			self.velocity_publisher.publish(vel_msg)
+			self.error_prior_linear = 0
+			self.integral_prior_linear = 0
+			self.error_prior_angular = 0
+			self.integral_prior_angular = 0
+                elif self.mode == 1:
                         while self.euclidean_distance() >= .05:
                                 vel_msg.linear.x = self.PID_controller_linear()
                 	        vel_msg.angular.z = self.PID_controller_angular()
@@ -141,8 +156,8 @@ class PID:
 			self.integral_prior_angular = 0
 		else:
 		        rospy.loginfo("Waiting for input...\n")
-			while self.mode == 0:
-			        if self.mode == 1:
+			while self.mode != 0 and self.mode != 1:
+			        if self.mode == 1 or self.mode == 0:
 				        break
 if __name__ == '__main__':
     try:
