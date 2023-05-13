@@ -61,7 +61,7 @@ class PID:
         self.pose_theta = data.pose[1].orientation.z
 	
     def update_goals(self, data):
-        self.goal_x = round(data.pose[1], 4)
+        self.goal_x = round(data.data[0], 4)
         self.goal_y = round(data.data[1], 4)
         self.goal_theta = data.data[2]
         self.mode = data.data[3]
