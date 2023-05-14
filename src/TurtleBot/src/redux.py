@@ -82,13 +82,6 @@ class PID:
         self.error_prior_linear = self.euclidean_distance()  # update the error prior 
         return ud_linear
 
-    def integral_linear_vel(self):
-        integral_linear_vel = self.integral_prior_linear + self.euclidean_distance() * self.time_discr
-        # update the integral prior 
-        ui_linear = self.Ki_gain_linear * integral_linear_vel
-	self.integral_prior_linear = integral_linear_vel
-        return ui_linear
-
     def proportional_angular_vel(self): 
         error_angle = self.steering_angle() - self.pose_theta
         return min(self.Kp_gain_angular * error_angle, 0.1)
@@ -122,6 +115,12 @@ class PID:
         self.error_prior_angular = 0
         self.integral_prior_angular = 0
         return pid_control_angular
+ 
+    def integral_linear_vel(self):
+        integral_linear_vel = self.integral_prior_linear + self.euclidean_distance() * self.time_discr
+        ui_linear = self.Ki_gain_linear * integral_linear_vel
+        self.integral_prior_linear = integral_linear_vel
+        return ui_linear
 
     def PID_controller_angular(self, goal_angle):
         # calculate the error between the current angle and the goal angle
