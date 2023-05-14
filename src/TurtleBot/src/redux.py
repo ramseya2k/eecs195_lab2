@@ -85,7 +85,7 @@ class PID:
     def proportional_angular_vel(self): 
         error_angle = self.steering_angle() - self.pose_theta
         #return min(self.Kp_gain_angular * error_angle, 0.1)
-	return min(self.Kp_gain_angular * error_angle, -0.1)
+	return max(self.Kp_gain_angular * error_angle, -0.1)
 
     def derivative_angular_vel(self):
         error_angle = self.steering_angle() - self.pose_theta
