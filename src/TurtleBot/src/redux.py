@@ -132,7 +132,7 @@ class PID:
 			while self.euclidean_distance() >= .05:
 				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
 				self.velocity_publisher.publish(vel_msg)
-			vel_msg.angular.z = self.PID_Controller_angular() # make it turn towards the goal 
+			vel_msg.angular.z = self.PID_controller_angular() # make it turn towards the goal 
 			self.velocity_publisher.publish(vel_msg)
 			vel_msg.linear.x = 0
 			vel_msg.angular.z = 0
