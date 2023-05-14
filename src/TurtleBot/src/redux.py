@@ -123,16 +123,38 @@ class PID:
         self.integral_prior_angular = 0
         return pid_control_angular
 
+    def PID_controller_angular(self, goal_angle):
+        # calculate the error between the current angle and the goal angle
+        error = goal_angle - self.theta
+        # calculate the proportional term
+        proportional = self.Kp_angular * error
+        # calculate the integral term
+        self.integral_angular += error * self.dt
+        integral = self.Ki_angular * self.integral_angular
+        # calculate the derivative term
+        derivative = self.Kd_angular * (error - self.error_prior_angular) / self.dt
+        # calculate the control signal
+        control_signal = proportional + integral + derivative
+        # update error and integral prior
+        self.error_prior_angular = error
+        self.integral_prior_angular = self.integral_angular
+        # limit the control signal to the range [-1, 1]
+        control_signal = max(min(control_signal, 1), -1)
+        return control_signal
     def move2goal(self):
         while not rospy.is_shutdown():
                 vel_msg = Twist()
 		if self.mode == 0: # activate angular, linear, and then angular
-			vel_msg.angular.z = self.PID_controller_angular() # faces the reference point 
+			desired_angle = math.atan2(self.goal_y - self.y, self.goal_x - self.x)
+			error_angle = desired_angle - self.theta 
+			vel_msg.angular.z = self.PID_controller_angular(error_angle) # faces the reference point 
 			self.velocity_publisher.publish(vel_msg)
 			while self.euclidean_distance() >= .05:
 				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
 				self.velocity_publisher.publish(vel_msg)
-			vel_msg.angular.z = self.PID_controller_angular() # make it turn towards the goal 
+			desired_angle = math.atan2(self.goal_y - self.y, self.goal_x - self.x)
+			error_angle = desired_angle - self.theta 
+			vel_msg.angular.z = self.PID_controller_angular(error_angle) # faces the reference point 
 			self.velocity_publisher.publish(vel_msg)
 			vel_msg.linear.x = 0
 			vel_msg.angular.z = 0
