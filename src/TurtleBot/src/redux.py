@@ -141,6 +141,7 @@ class PID:
 			self.integral_prior_linear = 0
 			self.error_prior_angular = 0
 			self.integral_prior_angular = 0
+			self.mode = None # set it to none after it reaches the goal in case user wants mode to be 0 or 1
                 elif self.mode == 1:
                         while self.euclidean_distance() >= .05:
                                 vel_msg.linear.x = self.PID_controller_linear()
@@ -154,6 +155,7 @@ class PID:
 			self.integral_prior_linear = 0
 			self.error_prior_angular = 0
 			self.integral_prior_angular = 0
+			self.mode = None # set it to none after it reaches the goal in case user wants mode to be 0 or 1 
 		else:
 		        rospy.loginfo("Waiting for input...\n")
 			while self.mode != 0 and self.mode != 1:
