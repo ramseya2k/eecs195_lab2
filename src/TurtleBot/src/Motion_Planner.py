@@ -10,7 +10,7 @@ goal_position = None # bound to be a global variable
 trajectory = [] # initialized to be empty, global
 trajectory_index = 0
 
-def goal_position(data): # from /target_pose
+def goal_position_callback(data): # from /target_pose
 	# extract goal positon from the received message
 	global goal_position, current_position_x, current_position_y
 	goal_position = data.pose.position
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
 	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position) # obtain position of robot
 	rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
-	rospy.Subscriber('/target_pose', PoseStamped, goal_position) # goal position
+	rospy.Subscriber('/target_pose', PoseStamped, goal_position_callback) # goal position
 	monitor_robot_pose()
 
 
