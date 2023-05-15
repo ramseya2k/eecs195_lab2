@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from geometry_msgs.msg import PoseStamped
-from geometry_msgs.msg import ModelStates
+from gazebo_msgs.msg import ModelStates
 
 
 def get_goal_position(): # asks for input 
