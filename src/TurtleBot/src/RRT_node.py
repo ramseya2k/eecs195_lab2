@@ -13,6 +13,10 @@ import numpy as np
 import math
 from math import sqrt, sin, cos, atan2, ceil, floor
 
+current_origin = None 
+current_resolution = None
+current_data = None
+current_map = None
 
 def map_update(information): # references
 	global current_map
