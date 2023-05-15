@@ -9,22 +9,24 @@ from geometry_msgs.msg import PoseStamped
 goal_position = None # bound to be a global variable
 trajectory = [] # initialized to be empty, global
 trajectory_index = 0
+current_position_x = 0.0
+current_position_y = 0.0
 
 def goal_position_callback(data): # from /target_pose
 	# extract goal positon from the received message
 	global goal_position, current_position_x, current_position_y
 	goal_position = data.pose.position
-	rospy.loginfo("Received goal position: x={}, y={}, z={}".format(goal_position.x, goal_position.y, goal_position.z))
+	rospy.loginfo("Received goal position: x={}, y={}".format(goal_position.x, goal_position.y))
 	# send start and goal positions to RRT node 
-	if trajectory:
-		start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
+	#if trajectory:
+	#	start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
 
 def current_position(msg): # from /gazebo/model_states 
-	global current_position_x, current_position_y, rotation, goal_position
+	global current_position_x, current_position_y, goal_position
 	current_position_x = msg.pose[1].position.x
 	current_position_y = msg.pose[1].position.y
 	#rotation = msg.pose[1].orientation.z
-	if goal_position:
+	if goal_position is not None:
 		start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y]))
 		goal_position = None # reset goal position 
 		
@@ -47,7 +49,7 @@ def monitor_robot_pose():
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(.1) 
 	# wait until robot is close to first point in trajectory 
-	while not distance(trajectory[trajectory_index]):
+	while not distance(trajectory[trajectory_index] <= .1):
 		rospy.sleep(.1)
 	while trajectory_index < len(trajectory) - 1: # if this causes an issue maybe do <= or get rid of -1 
 		trajectory_index += 1
@@ -55,12 +57,13 @@ def monitor_robot_pose():
 		x = traj_temp[0]
 		y = traj_temp[1]
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 90, 1] )) #x, y, theta, mode
+		while not distance(trajectory[trajectory_index] <= .1):
+			rospy.sleep(.1)
 
 
 def distance(trajectory_point):
 	global current_position_x, current_position_y
-	distance = sqrt((trajectory_point[0] - current_position_x)**2 + (trajectory_point[1] - current_position_y)**2)
-	return distance <= .1
+	return sqrt((trajectory_point[0] - current_position_x)**2 + (trajectory_point[1] - current_position_y)**2)
 
 if __name__ == '__main__':
 	rospy.init_node('Motion_Planner', anonymous=False)
