@@ -20,7 +20,7 @@ def monitor_robot_pose(msg): # assigns the values to the current position of the
 if __name__ == '__main__':
 	rospy.init_node("ask_target", anonymous=False)
 	pub = rospy.Publisher('/target_pose', PoseStamped, queue_size=10)
-	rospy.Subscriber('/gazebo/model_states", ModelStates, monitor_robot_pose)
+	rospy.Subscriber('/gazebo/model_states', ModelStates, monitor_robot_pose)
 	rate = rospy.Rate(10)
 	
 	goal_x, goal_y = get_goal_position()
