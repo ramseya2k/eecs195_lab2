@@ -25,10 +25,12 @@ def current_position(msg): # from /gazebo/model_states
 	global current_position_x, current_position_y, goal_position
 	current_position_x = msg.pose[1].position.x
 	current_position_y = msg.pose[1].position.y
+	print("Obtaining current position...\n")
 	#rotation = msg.pose[1].orientation.z
 	if goal_position is not None:
-		start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y]))
-		goal_position = None # reset goal position 
+		#start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y]))
+		#goal_position = None # reset goal position 
+		pass
 		
 		
 
@@ -38,6 +40,7 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 	global trajectory, trajectory_index
 	trajectory = msg.data
 	trajectory_index = 0
+	print("Trajectory received!\n")
 	if len(trajectory) > 0:
 		traj_temp = trajectory[0] # trajectory contains 2 elements in 1 element, separate it
 		x = traj_temp[0]
@@ -46,6 +49,7 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 
 def monitor_robot_pose():
 	global trajectory, trajectory_index
+	print("Monitoring...\n")
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(.1) 
 	# wait until robot is close to first point in trajectory 
