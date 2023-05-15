@@ -64,6 +64,7 @@ def distance(trajectory_point):
 
 if __name__ == '__main__':
 	rospy.init_node('Motion_Planner', anonymous=False)
+	print("Ready!\n")
 	start_goal_pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	reference_pose_pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=10)
 	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
