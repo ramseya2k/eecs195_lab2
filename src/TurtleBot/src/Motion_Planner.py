@@ -49,15 +49,15 @@ def monitor_robot_pose():
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(.1) 
 	# wait until robot is close to first point in trajectory 
-	while not distance(trajectory[trajectory_index] <= .1):
+	while not distance(trajectory[trajectory_index]) <= .1):
 		rospy.sleep(.1)
 	while trajectory_index < len(trajectory) - 1: # if this causes an issue maybe do <= or get rid of -1 
 		trajectory_index += 1
 		traj_temp = trajectory[trajectory_index]
 		x = traj_temp[0]
 		y = traj_temp[1]
-		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 90, 1] )) #x, y, theta, mode
-		while not distance(trajectory[trajectory_index] <= .1):
+		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 90, 1])) #x, y, theta, mode
+		while not distance(trajectory[trajectory_index]) <= .1):
 			rospy.sleep(.1)
 
 
