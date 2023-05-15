@@ -44,6 +44,8 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 
 def monitor_robot_pose():
 	global trajectory, trajectory_index
+	while not trajectory: # waits until there is a trajectory 
+		rospy.sleep(.1) 
 	# wait until robot is close to first point in trajectory 
 	while not distance(trajectory[trajectory_index]):
 		rospy.sleep(.1)
