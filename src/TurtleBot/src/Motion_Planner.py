@@ -3,6 +3,74 @@ import rospy
 from std_msgs.msg import Float64MultiArray
 from gazebo_msgs.msg import ModelStates
 from math import sqrt
+from geometry_msgs.msg import PoseStamped
+
+
+goal_position = None # bound to be a global variable
+trajectory = [] # initialized to be empty, global
+trajectory_index = 0
+
+def goal_position(data): # from /target_pose
+	# extract goal positon from the received message
+	global goal_position, current_position_x, current_position_y
+	goal_position = data.pose.position
+	rospy.loginfo("Received goal position: x={}, y={}, z={}".format(goal_position.x, goal_position.y, goal_position.z))
+	# send start and goal positions to RRT node 
+	if trajectory:
+		start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
+
+def current_position(msg): # from /gazebo/model_states 
+	global current_position_x, current_position_y, rotation, goal_position
+	current_position_x = msg.pose[1].position.x
+	current_position_y = msg.pose[1].position.y
+	#rotation = msg.pose[1].orientation.z
+	if goal_position:
+		start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y]))
+		goal_position = None # reset goal position 
+		
+		
+
+def trajectory_callback(msg): # send the first point in the trajectory to the PID and publish to reference_pose topic
+	# monitor the pose of the robot using using the /Gazebo/model_states topic 
+	# once it gets very close to that position, the node should send the second position in the trajectory and wait until the robot is very close until it visits all the points
+	global trajectory, trajectory_index
+	trajectory = msg.data
+	trajectory_index = 0
+	if len(trajectory) > 0:
+		traj_temp = trajectory[0] # trajectory contains 2 elements in 1 element, separate it
+		x = traj_temp[0]
+		y = traj_temp[1]
+		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 90, 1])) # x, y, theta, mode
+
+def monitor_robot_pose():
+	global trajectory, trajectory_index
+	# wait until robot is close to first point in trajectory 
+	while not distance(trajectory[trajectory_index]):
+		rospy.sleep(.1)
+	while trajectory_index < len(trajectory) - 1: # if this causes an issue maybe do <= or get rid of -1 
+		trajectory_index += 1
+		traj_temp = trajectory[trajectory_index]
+		x = traj_temp[0]
+		y = traj_temp[1]
+		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 90, 1] )) #x, y, theta, mode
+
+
+def distance(trajectory_point):
+	global current_position_x, current_position_y
+	distance = sqrt((trajectory_point[0] - current_position_x)**2 + (trajectory_point[1] - current_position_y)**2)
+	return distance <= .1
+
+if __name__ == '__main__':
+	rospy.init_node('Motion_Planner', anonymous=False)
+	start_goal_pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
+	reference_pose_pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=10)
+	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
+	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position) # obtain position of robot
+	rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
+	rospy.Subscriber('/target_pose', PoseStamped, goal_position) # goal position
+	monitor_robot_pose()
+
+
 '''
 # THIS IS FOR PART 2
 def send_info(): # sends info & publishes
@@ -40,12 +108,13 @@ if __name__ == '__main__':
 		main()
 	except rospy.ROSInterruptException:
 		pass
+
 '''
 '''
 def check_if_done(msg):
 	# subscribe to the trajectory, so what i was thinking was that maybe once the robot reaches its goal, check if the coordinates are equal to the x goal and y goal and if they are, then finish? or do error < 0.5 like the other PID controller
 '''
-
+'''
 # THIS IS FOR PART 1 OF THE ASSIGNMENT 
 motionArray = [] # this will be used inside this file
 def send_info(): # sends information & publishes it 
@@ -99,3 +168,4 @@ if __name__ == '__main__':
 		main()
 	except rospy.ROSInterruptException:
 		pass
+'''
