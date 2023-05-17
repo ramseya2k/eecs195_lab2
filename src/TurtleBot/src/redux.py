@@ -36,20 +36,20 @@ class PID:
         self.mode = None
 
         # Time discretization for the PID
-        self.time_discr = 0.001
+        self.time_discr = .01#0.001
 
         # PID parameters for linear velocity
         self.error_prior_linear = 0
         self.integral_prior_linear = 0
-        self.Kp_gain_linear = 1
-        self.Ki_gain_linear = 0.1
+        self.Kp_gain_linear = 2
+        self.Ki_gain_linear = 0.5
         self.Kd_gain_linear = 0
 
         # PID parameters for angular velocity
         self.error_prior_angular = 0
         self.integral_prior_angular = 0
-        self.Kp_gain_angular = 1
-        self.Ki_gain_angular = 0.1
+        self.Kp_gain_angular = 2
+        self.Ki_gain_angular = 0.5
         self.Kd_gain_angular = 0
 
         self.rate = rospy.Rate(10)
@@ -58,7 +58,7 @@ class PID:
     def update_pose(self, data):
         self.pose_x = round(data.pose[1].position.x, 4)
         self.pose_y = round(data.pose[1].position.y, 4)
-        self.pose_theta = data.pose[1].orientation.z
+        self.pose_theta = euler_from_quaternion([data.pose[1].orientation.x, data.pose[1].orientation.y, data.pose[1].orientation.z, data.pose[1].orientation.w)[2]
 	
     def update_goals(self, data):
         self.goal_x = round(data.data[0], 4)
@@ -68,7 +68,7 @@ class PID:
 
     def euclidean_distance(self):
         """Euclidean distance between current pose and the goal."""
-        return sqrt(pow((self.goal_x - self.pose_x), 2) + pow((self.goal_y - self.pose_y), 2))
+        return sqrt(pow((self.goal_x - self.pose_x), 2) + pow((self.goal_y - self.pose_y), 2) + pow((self.goal_theta - self.pose_theta), 2))
 
     def steering_angle(self):
         return atan2(self.goal_y - self.pose_y, self.goal_x - self.pose_x)
