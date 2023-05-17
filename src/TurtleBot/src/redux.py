@@ -58,7 +58,7 @@ class PID:
     def update_pose(self, data):
         self.pose_x = round(data.pose[1].position.x, 4)
         self.pose_y = round(data.pose[1].position.y, 4)
-        self.pose_theta = euler_from_quaternion([data.pose[1].orientation.x, data.pose[1].orientation.y, data.pose[1].orientation.z, data.pose[1].orientation.w)[2]
+        self.pose_theta = euler_from_quaternion([data.pose[1].orientation.x, data.pose[1].orientation.y, data.pose[1].orientation.z, data.pose[1].orientation.w])[2]
 	
     def update_goals(self, data):
         self.goal_x = round(data.data[0], 4)
