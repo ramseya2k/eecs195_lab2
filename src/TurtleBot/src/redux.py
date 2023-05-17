@@ -42,15 +42,15 @@ class PID:
         self.error_prior_linear = 0
         self.integral_prior_linear = 0
         self.Kp_gain_linear = 2
-        self.Ki_gain_linear = 0.5
-        self.Kd_gain_linear = .01
+        self.Ki_gain_linear = 0.6
+        self.Kd_gain_linear = 0
 
         # PID parameters for angular velocity
         self.error_prior_angular = 0
         self.integral_prior_angular = 0
         self.Kp_gain_angular = 2
-        self.Ki_gain_angular = 0.5
-        self.Kd_gain_angular = .01
+        self.Ki_gain_angular = 0.6
+        self.Kd_gain_angular = 0
 
         self.rate = rospy.Rate(10)
 
