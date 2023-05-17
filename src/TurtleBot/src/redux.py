@@ -126,16 +126,23 @@ class PID:
         while not rospy.is_shutdown():
                 vel_msg = Twist()
 		if self.mode == 0: # activate angular, linear, and then angular
-			vel_msg.angular.z = self.PID_controller_angular() # faces the reference point 
+			while abs(self.steering_angle() - self.pose_theta) >= .05:
+				vel_msg.angular.z = self.PID_controller_angular()
+				self.velocity_publisher.publish(vel_msg)
+			vel_msg.angular.z = 0 
 			self.velocity_publisher.publish(vel_msg)
 			while self.euclidean_distance() >= .05:
 				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
 				self.velocity_publisher.publish(vel_msg)
-			vel_msg.angular.z = self.PID_controller_angular() # make it turn towards the goal 
-			self.velocity_publisher.publish(vel_msg)
 			vel_msg.linear.x = 0
+			self.velocity_publisher.publish(vel_msg)
+			
+			while abs(self.goal_theta - self.pose_theta) >= .05:
+				vel_msg.angular.z = self.PID_controller_angular()
+				self.velocity_publisher.publish(vel_msg)
 			vel_msg.angular.z = 0
 			self.velocity_publisher.publish(vel_msg)
+			
 			self.error_prior_linear = 0
 			self.integral_prior_linear = 0
 			self.error_prior_angular = 0
