@@ -129,19 +129,29 @@ class PID:
 			while abs(self.steering_angle() - self.pose_theta) >= .05:
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
+				self.rate.sleep()
+				
+			rospy.loginfo("Faced reference point!\n")
 			vel_msg.angular.z = 0 
 			self.velocity_publisher.publish(vel_msg)
+			
 			while self.euclidean_distance() >= .05:
 				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
 				self.velocity_publisher.publish(vel_msg)
+				self.rate.sleep()
+				
 			vel_msg.linear.x = 0
 			self.velocity_publisher.publish(vel_msg)
+			rospy.loginfo("Arrived at goal!\n")
 			
 			while abs(self.goal_theta - self.pose_theta) >= .05:
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
+				self.rate.sleep()
+				
 			vel_msg.angular.z = 0
 			self.velocity_publisher.publish(vel_msg)
+			rospy.loginfo("Turned to final angle!\n")
 			
 			self.error_prior_linear = 0
 			self.integral_prior_linear = 0
@@ -154,9 +164,12 @@ class PID:
                 	        vel_msg.angular.z = self.PID_controller_angular()
                 	        self.velocity_publisher.publish(vel_msg)
                 	        self.rate.sleep()
+				
+			rospy.loginfo("Arrived at goal!\n")
 			vel_msg.linear.x = 0
 			vel_msg.angular.z = 0
 			self.velocity_publisher.publish(vel_msg)
+			
 			self.error_prior_linear = 0
 			self.integral_prior_linear = 0
 			self.error_prior_angular = 0
