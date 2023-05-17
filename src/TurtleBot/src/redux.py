@@ -36,20 +36,20 @@ class PID:
         self.mode = None
 
         # Time discretization for the PID
-        self.time_discr = 0.001#.01
+        self.time_discr = 0.001 #.01
 
         # PID parameters for linear velocity
         self.error_prior_linear = 0
         self.integral_prior_linear = 0
-        self.Kp_gain_linear = 4
-        self.Ki_gain_linear = 0.7
+        self.Kp_gain_linear = 8
+        self.Ki_gain_linear = 0.6
         self.Kd_gain_linear = 0
 
         # PID parameters for angular velocity
         self.error_prior_angular = 0
         self.integral_prior_angular = 0
-        self.Kp_gain_angular = 4
-        self.Ki_gain_angular = 0.7
+        self.Kp_gain_angular = 8
+        self.Ki_gain_angular = 0.6
         self.Kd_gain_angular = 0
 
         self.rate = rospy.Rate(10)
