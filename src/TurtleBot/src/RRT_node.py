@@ -56,20 +56,20 @@ def start_goal_callback(msg):
 	
 	
 
-
+ # if there are issues, switch these around
 def get_index_from_coordinates(x, y):
 	global current_origin
 	global current_resolution
-	x = current_origin.position.x + int(round(x/current_resolution))
-	y = current_origin.position.y + int(round(y/current_resolution))
+	x = int(round((x - current_origin.position.y) / current_resolution))
+	y = int(round((y - current_origin.position.x) / current_resolution))
 	return x, y
 
 
 def get_coordinates_from_index(x, y):
 	global current_origin
 	global current_resolution
-	x = current_origin.position.x + (x + 0.5) * current_resolution
-	y = current_origin.position.y + (y + 0.5) * current_resolution
+	x = (y * current_resolution) + current_origin.y
+	y = (x * current_resolution) + current_origin.x
 	return x, y
 if __name__ == '__main__':
 	try:
