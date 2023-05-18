@@ -145,9 +145,8 @@ class PID:
 			self.mode = None		
 		else:
 		        rospy.loginfo("Waiting for input...\n")
-			while self.mode != 0 and self.mode != 1:
-			        if self.mode == 1 or self.mode == 0:
-				        break
+			while self.mode is None:
+				pass
 if __name__ == '__main__':
     try:
         x = PID()
