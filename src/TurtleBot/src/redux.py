@@ -136,9 +136,7 @@ class PID:
 			self.velocity_publisher.publish(vel_msg)
 			
 			rospy.loginfo("Going to reference point!\n")
-			while self.euclidean_distance() >= .23:
-				if(self.euclidean_distance() < .23):
-					break
+			while self.euclidean_distance() > .23:
 				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
 				self.velocity_publisher.publish(vel_msg)
 				self.rate.sleep()
