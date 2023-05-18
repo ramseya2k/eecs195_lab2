@@ -104,7 +104,7 @@ def main():
 			#rompt_flag = False
 		rate = rospy.Rate(10)
 		rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
-		rate.sleep(.1)
+		rate.sleep()
 
 if __name__ == '__main__':
 	try:
