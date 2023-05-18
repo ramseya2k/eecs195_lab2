@@ -128,7 +128,7 @@ class PID:
                 vel_msg = Twist()
 		if self.mode == 0:
 			while abs(self.steering_angle() - self.pose_theta) >= 0.02:
-				vel_msg.angular.z = self.PID_controller_angular(goal_pose) # face the reference point 
+				vel_msg.angular.z = self.PID_controller_angular() # face the reference point 
 				self.velocity_publisher.publish(vel_msg)
 				self.rate.sleep()
 			rospy.loginfo("Faced the reference point!\n")
@@ -155,7 +155,7 @@ class PID:
 			self.error_prior_linear = 0
 			self.integral_prior_linear = 0
 			self.error_prior_angular = 0
-			self.integral_prior_linear = 0
+			self.integral_prior_angular = 0
 			self.mode = None
 		
 		elif self.mode == 1:
@@ -172,7 +172,7 @@ class PID:
 			self.error_prior_linear = 0
 			self.integral_prior_linear = 0
 			self.error_prior_angular = 0
-			self.integral_prior_linear = 0
+			self.integral_prior_angular = 0
 			self.mode = None		
 		else:
 		        rospy.loginfo("Waiting for input...\n")
