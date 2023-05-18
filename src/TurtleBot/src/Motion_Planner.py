@@ -102,8 +102,9 @@ def main():
 	while not rospy.is_shutdown():
 		pub.publish(send_info()) # sends the start and goal coordinates to /start_goal
 			#rompt_flag = False
-			#rate = rospy.Rate(10)
+		rate = rospy.Rate(10)
 		rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
+		rate.sleep(.1)
 
 if __name__ == '__main__':
 	try:
