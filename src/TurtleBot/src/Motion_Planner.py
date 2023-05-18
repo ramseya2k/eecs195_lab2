@@ -156,7 +156,7 @@ def pose_update(msg):
 		error = sqrt(pow(goal_x - position_x, 2) + pow(goal_y - position_y, 2))
 		print(error)
 		if motionArray[3] == 0:
-			if(goal_x !=) and (error <= .15):
+			if(goal_x != 0) and (error <= .15):
 				print("goal reached") 
 				prompt_flag = True
 				motionArray = []
