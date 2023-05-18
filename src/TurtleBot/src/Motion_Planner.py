@@ -134,7 +134,8 @@ def main():
 	while not rospy.is_shutdown():
 		if prompt_flag:
 			pub.publish(send_info())
-			prompt_flag = False # reset flag after input is received 
+			prompt_flag = False # reset flag after input is received
+			rospy.sleep(.1)
 	rate.sleep()
 	
 
