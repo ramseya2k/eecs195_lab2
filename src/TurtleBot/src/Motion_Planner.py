@@ -77,7 +77,7 @@ if __name__ == '__main__':
 	monitor_robot_pose()
 
 '''
-
+'''
 # THIS IS FOR PART 2
 def send_info(): # sends info & publishes
 	x_start = float(raw_input("Enter start of X position:\n"))
@@ -110,8 +110,8 @@ if __name__ == '__main__':
 	except rospy.ROSInterruptException:
 		pass
 
-
 '''
+
 # THIS IS FOR PART 1 OF THE ASSIGNMENT 
 motionArray = [] # this will be used inside this file
 def send_info(): # sends information & publishes it 
@@ -165,4 +165,3 @@ if __name__ == '__main__':
 		main()
 	except rospy.ROSInterruptException:
 		pass
-'''
