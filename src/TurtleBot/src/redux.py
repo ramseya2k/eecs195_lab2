@@ -71,7 +71,7 @@ class PID:
 
     def euclidean_distance(self):
         """Euclidean distance between current pose and the goal."""
-        return sqrt(pow((self.goal_x - self.pose_x), 2) + pow((self.goal_y - self.pose_y), 2) + pow((self.goal_theta - self.pose_theta), 2))
+        return sqrt(pow((self.goal_x - self.pose_x), 2) + pow((self.goal_y - self.pose_y), 2)) #+ pow((self.goal_theta - self.pose_theta), 2))
 
     def steering_angle(self):
         return atan2(self.goal_y - self.pose_y, self.goal_x - self.pose_x)
