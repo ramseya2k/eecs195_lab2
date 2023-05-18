@@ -135,7 +135,7 @@ class PID:
 			vel_msg.angular.z = 0 
 			self.velocity_publisher.publish(vel_msg)
 			
-			while self.euclidean_distance() >= .05:
+			while self.euclidean_distance() >= .22:
 				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
 				self.velocity_publisher.publish(vel_msg)
 				self.rate.sleep()
