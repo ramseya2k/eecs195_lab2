@@ -129,11 +129,13 @@ class PID:
         while not rospy.is_shutdown():
                 vel_msg = Twist()
 		if mode == 1:
+			rospy.loginfo("Moving to goal...\n")
 			while self.euclidean_distance() >= 0.05:
 				vel_msg.linear.x = self.PID_controller_linear()
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
 				self.raterate.sleep()
+			rospy.loginfo("Arrived at goal!\n")
 			vel_msg.linear.x = 0
 			vel_msg.linear.z = 0
 			self.error_prior_linear = 0
