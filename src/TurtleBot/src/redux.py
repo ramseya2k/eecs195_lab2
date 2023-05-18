@@ -163,7 +163,7 @@ class PID:
 			self.integral_prior_angular = 0
 			self.mode = None # set it to none after it reaches the goal in case user wants mode to be 0 or 1
                 elif self.mode == 1:
-                        while self.euclidean_distance() >= .05:
+                        while self.euclidean_distance() >= 0.05:
                                 vel_msg.linear.x = self.PID_controller_linear()
                 	        vel_msg.angular.z = self.PID_controller_angular()
                 	        self.velocity_publisher.publish(vel_msg)
