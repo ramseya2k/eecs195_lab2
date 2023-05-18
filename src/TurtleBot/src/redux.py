@@ -177,7 +177,7 @@ class PID:
 		else:
 		        rospy.loginfo("Waiting for input...\n")
 			while self.mode is None:
-				pass
+				self.rate.sleep()
 if __name__ == '__main__':
     try:
         x = PID()
