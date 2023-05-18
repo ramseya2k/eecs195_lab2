@@ -68,8 +68,8 @@ def get_index_from_coordinates(x, y):
 def get_coordinates_from_index(x, y):
 	global current_origin
 	global current_resolution
-	x = (y * current_resolution) + current_origin.y
-	y = (x * current_resolution) + current_origin.x
+	x = (y * current_resolution) + current_origin.position.y
+	y = (x * current_resolution) + current_origin.position.x
 	return x, y
 if __name__ == '__main__':
 	try:
