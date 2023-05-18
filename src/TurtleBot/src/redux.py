@@ -41,15 +41,15 @@ class PID:
         # PID parameters for linear velocity
         self.error_prior_linear = 0
         self.integral_prior_linear = 0
-        self.Kp_gain_linear = 8
-        self.Ki_gain_linear = 2
+        self.Kp_gain_linear = 1
+        self.Ki_gain_linear = .1
         self.Kd_gain_linear = 0
 
         # PID parameters for angular velocity
         self.error_prior_angular = 0
         self.integral_prior_angular = 0
-        self.Kp_gain_angular = 8
-        self.Ki_gain_angular = 2
+        self.Kp_gain_angular = 1
+        self.Ki_gain_angular = .1
         self.Kd_gain_angular = 0
 
         self.rate = rospy.Rate(10)
@@ -126,7 +126,7 @@ class PID:
         while not rospy.is_shutdown():
                 vel_msg = Twist()
 		if self.mode == 0: # activate angular, linear, and then angular
-			while abs(self.steering_angle() - self.pose_theta) >= .01:
+			while abs(self.steering_angle() - self.pose_theta) >= .001:
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
 				self.rate.sleep()
@@ -144,7 +144,7 @@ class PID:
 			self.velocity_publisher.publish(vel_msg)
 			rospy.loginfo("Arrived at goal!\n")
 			
-			while abs(self.goal_theta - self.pose_theta) >= .01:
+			while abs(self.goal_theta - self.pose_theta) >= .001:
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
 				self.rate.sleep()
