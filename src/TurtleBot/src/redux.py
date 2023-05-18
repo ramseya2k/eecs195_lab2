@@ -128,7 +128,7 @@ class PID:
     def move2goal(self):
         while not rospy.is_shutdown():
                 vel_msg = Twist()
-		if mode == 1:
+		if self.mode == 1:
 			rospy.loginfo("Moving to goal...\n")
 			while self.euclidean_distance() >= 0.05:
 				vel_msg.linear.x = self.PID_controller_linear()
