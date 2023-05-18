@@ -128,57 +128,19 @@ class PID:
     def move2goal(self):
         while not rospy.is_shutdown():
                 vel_msg = Twist()
-		if self.mode == 0: # activate angular, linear, and then angular
-			while abs(self.steering_angle() - self.pose_theta) >= .03:
+		if mode == 1:
+			while self.euclidean_distance() >= 0.05:
+				vel_msg.linear.x = self.PID_controller_linear()
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
-				self.rate.sleep()
-				
-			rospy.loginfo("Faced reference point!\n")
-			vel_msg.angular.z = 0 
-			self.velocity_publisher.publish(vel_msg)
-			
-			rospy.loginfo("Going to reference point!\n")
-			while self.euclidean_distance() > .23:
-				vel_msg.linear.x = self.PID_controller_linear() # goes to the reference point 
-				self.velocity_publisher.publish(vel_msg)
-				self.rate.sleep()
-				
+				self.raterate.sleep()
 			vel_msg.linear.x = 0
-			self.velocity_publisher.publish(vel_msg)
-			rospy.loginfo("Arrived at goal!\n")
-			
-			while abs(self.goal_theta - self.pose_theta) >= .03:
-				vel_msg.angular.z = self.PID_controller_angular()
-				self.velocity_publisher.publish(vel_msg)
-				self.rate.sleep()
-				
-			vel_msg.angular.z = 0
-			self.velocity_publisher.publish(vel_msg)
-			rospy.loginfo("Turned to final angle!\n")
-			
+			vel_msg.linear.z = 0
 			self.error_prior_linear = 0
 			self.integral_prior_linear = 0
 			self.error_prior_angular = 0
-			self.integral_prior_angular = 0
-			self.mode = None # set it to none after it reaches the goal in case user wants mode to be 0 or 1
-                elif self.mode == 1:
-                        while self.euclidean_distance() >= 0.05:
-                                vel_msg.linear.x = self.PID_controller_linear()
-                	        vel_msg.angular.z = self.PID_controller_angular()
-                	        self.velocity_publisher.publish(vel_msg)
-                	        self.rate.sleep()
-				
-			rospy.loginfo("Arrived at goal!\n")
-			vel_msg.linear.x = 0
-			vel_msg.angular.z = 0
-			self.velocity_publisher.publish(vel_msg)
-			
-			self.error_prior_linear = 0
 			self.integral_prior_linear = 0
-			self.error_prior_angular = 0
-			self.integral_prior_angular = 0
-			self.mode = None # set it to none after it reaches the goal in case user wants mode to be 0 or 1 
+			self.mode = None		
 		else:
 		        rospy.loginfo("Waiting for input...\n")
 			while self.mode != 0 and self.mode != 1:
