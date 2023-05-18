@@ -66,8 +66,6 @@ class PID:
         self.goal_theta = data.data[2]
         self.mode = data.data[3]
 	
-	if self.mode is not None:
-		self.move2goal()
 
     def euclidean_distance(self):
         """Euclidean distance between current pose and the goal."""
