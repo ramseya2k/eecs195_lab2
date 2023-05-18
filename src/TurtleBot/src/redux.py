@@ -134,7 +134,7 @@ class PID:
 				vel_msg.linear.x = self.PID_controller_linear()
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
-				self.raterate.sleep()
+				self.rate.sleep()
 			rospy.loginfo("Arrived at goal!\n")
 			vel_msg.linear.x = 0
 			vel_msg.linear.z = 0
