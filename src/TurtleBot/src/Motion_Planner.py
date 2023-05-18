@@ -100,11 +100,9 @@ def main():
 	rospy.init_node('Motion_Planner', anonymous=False)
 	pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	while not rospy.is_shutdown():
-		pub.publish(send_info()) # sends the start and goal coordinates to /start_goal
 		rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
+		pub.publish(send_info()) # sends the start and goal coordinates to /start_goal
 			#rompt_flag = False
-		rate = rospy.Rate(10)
-		rate.sleep()
 
 if __name__ == '__main__':
 	try:
