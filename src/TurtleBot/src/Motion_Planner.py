@@ -25,13 +25,7 @@ def current_position(msg): # from /gazebo/model_states
 	global current_position_x, current_position_y, goal_position
 	current_position_x = msg.pose[1].position.x
 	current_position_y = msg.pose[1].position.y
-	#rotation = msg.pose[1].orientation.z
-	if goal_position is not None:
-		start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y]))
-		goal_position = None # reset goal position 
 		
-		
-
 def trajectory_callback(msg): # send the first point in the trajectory to the PID and publish to reference_pose topic
 	# monitor the pose of the robot using using the /Gazebo/model_states topic 
 	# once it gets very close to that position, the node should send the second position in the trajectory and wait until the robot is very close until it visits all the points
@@ -39,7 +33,9 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 	trajectory = []
 	trajectory_index = 0
 	for i in range(0, len(msg.data), 2):
-		trajectory.append([msg.data[i], msg.data[i+1]])
+		x = msg.data[i]
+		y = msg.data[i+1]
+		trajectory.append([x, y])
 	if len(trajectory) > 0:
 		traj_temp = trajectory[0] # trajectory contains 2 elements in 1 element, separate it
 		x = traj_temp[0]
@@ -49,12 +45,13 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 def monitor_robot_pose():
 	global trajectory, trajectory_index
 	while not trajectory: # waits until there is a trajectory 
-		rospy.sleep(.1) 
+		rospy.sleep(0.1) 
 	while trajectory_index < len(trajectory): # if this causes an issue maybe do <= or get rid of -1 
 		traj_temp = trajectory[trajectory_index]
 		x = traj_temp[0]
 		y = traj_temp[1]
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
+		rospy.loginfo("Moving to point ({}, {})".format(x, y))
 		while not distance(trajectory[trajectory_index]) <= 0.5:
 			rospy.sleep(.1)
 		trajectory_index += 1
