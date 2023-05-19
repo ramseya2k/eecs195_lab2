@@ -80,6 +80,7 @@ if __name__ == '__main__':
 '''
 
 # THIS IS FOR PART 2
+trajectory_printed = True 
 def send_info(): # sends info & publishes
 	x_start = float(raw_input("Enter start of X position:\n"))
 	y_start = float(raw_input("Enter start of Y position:\n"))
@@ -91,19 +92,25 @@ def send_info(): # sends info & publishes
 	#pub.publish(arrayToPublish)
 
 def trajectory_callback(msg):
+	global trajectory_printed
 	result = []
 	for i in range(0, len(msg.data), 2):
 		#tmp = [msg.data[i], msg.data[i+1]]
 		result.append([msg.data[i], msg.data[i+1]])
-	print(result)
+	if result is not None:
+		print(result)
+		trajectory_printed = True 
+		
 
 def main():
 	rospy.init_node('Motion_Planner', anonymous=False)
 	pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
 	while not rospy.is_shutdown():
-		pub.publish(send_info()) # sends the start and goal coordinates to /start_goal
-			#rompt_flag = False
+		if trajectory_printed: 
+			pub.publish(send_info()) # sends the start and goal coordinates to /start_goal
+			trajectory_printed = False # set it to false and wait for the next trajectory to print 
+		rospy.sleep(0.1)
 
 if __name__ == '__main__':
 	try:
