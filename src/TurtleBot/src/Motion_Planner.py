@@ -14,9 +14,10 @@ current_position_y = 0.0
 
 def goal_position_callback(data): # from /target_pose
 	# extract goal positon from the received message
-	global goal_position, current_position_x, current_position_y
-	goal_position = data.pose.position
-	rospy.loginfo("Received goal position: x={}, y={}".format(goal_position.x, goal_position.y))
+	global goal_position
+	if goal_position is None:
+		goal_position = data.pose.position
+		rospy.loginfo("Received goal position: x={}, y={}".format(goal_position.x, goal_position.y))
 	# send start and goal positions to RRT node 
 	#if trajectory:
 	#	start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
