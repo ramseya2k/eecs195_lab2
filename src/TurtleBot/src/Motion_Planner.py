@@ -37,6 +37,7 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 		x = msg.data[i]
 		y = msg.data[i+1]
 		trajectory.append([x, y])
+	rospy.loginfo(trajectory) 
 	if len(trajectory) > 0:
 		traj_temp = trajectory[0] # trajectory contains 2 elements in 1 element, separate it
 		x = traj_temp[0]
