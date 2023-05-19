@@ -75,7 +75,8 @@ if __name__ == '__main__':
 	
 	rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
 	rospy.Subscriber('/target_pose', PoseStamped, goal_position_callback) # goal position
-	monitor_robot_pose()
+	while not rospy.is_shutdown():
+		monitor_robot_pose()
 
 '''
 # THIS IS FOR PART 2
