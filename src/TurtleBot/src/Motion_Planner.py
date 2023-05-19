@@ -37,9 +37,9 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 	# once it gets very close to that position, the node should send the second position in the trajectory and wait until the robot is very close until it visits all the points
 	global trajectory, trajectory_index
 	trajectory = msg.data
-	if isinstance(trajectory, float):
-		trajectory = [[trajectory]]
 	trajectory_index = 0
+	for i in range(0, len(msg.data), 2):
+		trajectory.append([msg.data[i], msg.data[i+1]])
 	if len(trajectory) > 0:
 		traj_temp = trajectory[0] # trajectory contains 2 elements in 1 element, separate it
 		x = traj_temp[0]
