@@ -12,16 +12,14 @@ trajectory_index = 0
 current_position_x = 0.0
 current_position_y = 0.0
 
-
-'''
 def goal_position_callback(data): # from /target_pose
 	# extract goal positon from the received message
 	global goal_position, current_position_x, current_position_y
 	goal_position = data.pose.position
 	rospy.loginfo("Received goal position: x={}, y={}".format(goal_position.x, goal_position.y))
 	# send start and goal positions to RRT node 
-	if trajectory:
-		start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
+	#if trajectory:
+	#	start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
 
 def current_position(msg): # from /gazebo/model_states 
 	global current_position_x, current_position_y, goal_position
@@ -44,7 +42,7 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 		traj_temp = trajectory[0] # trajectory contains 2 elements in 1 element, separate it
 		x = traj_temp[0]
 		y = traj_temp[1]
-		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 90, 1])) # x, y, theta, mode
+		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) # x, y, theta, mode
 
 def monitor_robot_pose():
 	global trajectory, trajectory_index
@@ -53,12 +51,12 @@ def monitor_robot_pose():
 	# wait until robot is close to first point in trajectory 
 	while not distance(trajectory[trajectory_index]) <= .1:
 		rospy.sleep(.1)
-	while trajectory_index < len(trajectory) - 1: # if this causes an issue maybe do <= or get rid of -1 
+	while trajectory_index < len(trajectory): # if this causes an issue maybe do <= or get rid of -1 
 		trajectory_index += 1
 		traj_temp = trajectory[trajectory_index]
 		x = traj_temp[0]
 		y = traj_temp[1]
-		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 90, 1])) #x, y, theta, mode
+		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		while not distance(trajectory[trajectory_index]) <= .1:
 			rospy.sleep(.1)
 
@@ -77,8 +75,8 @@ if __name__ == '__main__':
 	rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
 	rospy.Subscriber('/target_pose', PoseStamped, goal_position_callback) # goal position
 	monitor_robot_pose()
-'''
 
+'''
 # THIS IS FOR PART 2
 trajectory_printed = True 
 def send_info(): # sends info & publishes
@@ -119,7 +117,7 @@ if __name__ == '__main__':
 	except rospy.ROSInterruptException:
 		pass
 
-
+'''
 '''
 # THIS IS FOR PART 1 OF THE ASSIGNMENT 
 motionArray = [] # this will be used inside this file
