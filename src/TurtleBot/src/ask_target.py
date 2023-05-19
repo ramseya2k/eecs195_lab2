@@ -2,7 +2,8 @@
 import rospy
 from geometry_msgs.msg import PoseStamped
 from gazebo_msgs.msg import ModelStates
-
+robot_x = 0.0
+robot_y = 0.0
 
 def get_goal_position(): # asks for input 
 	x = float(input("Enter the X coordinate of the goal:\n"))
