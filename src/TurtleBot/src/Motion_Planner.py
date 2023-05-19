@@ -54,7 +54,7 @@ def monitor_robot_pose():
 		y = traj_temp[1]
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
-		while not distance(trajectory[trajectory_index]) >= 0.5:
+		while distance(trajectory[trajectory_index]) >= 0.5:
 			rospy.sleep(0.1)
 		trajectory_index +=1 
 
