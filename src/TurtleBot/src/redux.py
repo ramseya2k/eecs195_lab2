@@ -144,7 +144,7 @@ class PID:
 			vel_msg.linear.x = 0
 			self.velocity_publisher.publish(vel_msg)
 			
-			while abs(self.goal_theta - self.pose_theta) >= 0.005:
+			while abs(self.steering_angle() - self.pose_theta) >= 0.005:
 				vel_msg.angular.z = self.PID_controller_angular()
 				self.velocity_publisher.publish(vel_msg)
 				self.rate.sleep()
