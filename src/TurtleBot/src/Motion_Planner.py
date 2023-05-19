@@ -11,7 +11,7 @@ trajectory = [] # initialized to be empty, global
 trajectory_index = 0
 current_position_x = 0.0
 current_position_y = 0.0
-
+'''
 def goal_position_callback(data): # from /target_pose
 	# extract goal positon from the received message
 	global goal_position, current_position_x, current_position_y 
@@ -78,8 +78,8 @@ if __name__ == '__main__':
 	rospy.Subscriber('/target_pose', PoseStamped, goal_position_callback) # goal position
 	while not rospy.is_shutdown():
 		monitor_robot_pose()
-
 '''
+
 # THIS IS FOR PART 2
 trajectory_printed = True 
 def send_info(): # sends info & publishes
@@ -120,7 +120,6 @@ if __name__ == '__main__':
 	except rospy.ROSInterruptException:
 		pass
 
-'''
 '''
 # THIS IS FOR PART 1 OF THE ASSIGNMENT 
 motionArray = [] # this will be used inside this file
