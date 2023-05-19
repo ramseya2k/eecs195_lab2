@@ -23,9 +23,11 @@ def goal_position_callback(data): # from /target_pose
 	#	start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
 
 def current_position(msg): # from /gazebo/model_states 
-	global current_position_x, current_position_y, goal_position
+	global current_position_x, current_position_y
 	current_position_x = msg.pose[1].position.x
 	current_position_y = msg.pose[1].position.y
+	print('x = ', current_position_x)
+	print('y = ', current_position_y) 
 		
 def trajectory_callback(msg): # send the first point in the trajectory to the PID and publish to reference_pose topic
 	# monitor the pose of the robot using using the /Gazebo/model_states topic 
@@ -68,8 +70,9 @@ if __name__ == '__main__':
 	print("Ready!\n")
 	start_goal_pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	reference_pose_pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=10)
-	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
 	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position) # obtain position of robot
+	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
+	
 	rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
 	rospy.Subscriber('/target_pose', PoseStamped, goal_position_callback) # goal position
 	monitor_robot_pose()
