@@ -103,6 +103,7 @@ def trajectory_callback(msg):
 		
 
 def main():
+	global trajectory_printed
 	rospy.init_node('Motion_Planner', anonymous=False)
 	pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
