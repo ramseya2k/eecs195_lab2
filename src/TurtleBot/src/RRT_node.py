@@ -50,6 +50,7 @@ def start_goal_callback(msg):
 		result.append(x)
 		result.append(y)
 		pub.publish(Float64MultiArray(data=result))
+		rospy.sleep(0.1)
 	#pub.publish(Float64MultiArray(data=result))
 	print("done")
 	
