@@ -57,7 +57,7 @@ def monitor_robot_pose():
 		while not reached_point:
 			distance = sqrt((trajectory[i][0] - current_position_x)**2 + (trajectory[i][1] - current_position_y)**2)
 			rospy.sleep(0.1)
-			rospy.loginfo("Distance: ", distance)
+			print("Distance: ", distance)
 			if distance < 0.05:
 				reached_point = True
 		rospy.loginfo("Reahced Point({}, {})".format(x, y))
