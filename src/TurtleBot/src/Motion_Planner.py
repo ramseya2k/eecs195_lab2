@@ -46,10 +46,8 @@ def monitor_robot_pose():
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1)
 	rospy.loginfo(trajectory) 
-	for i in range(len(trajectory)):
-		traj_temp = trajectory[i]
-		x = traj_temp[0]
-		y = traj_temp[1]
+	for point in trajectory:
+		x, y = point
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
 		reached_point = False
