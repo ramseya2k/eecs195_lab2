@@ -49,7 +49,8 @@ def start_goal_callback(msg):
 		x, y = get_coordinates_from_index(path[i][0], path[i][1])
 		result.append(x)
 		result.append(y)
-	pub.publish(Float64MultiArray(data=result))
+		pub.publish(Float64MultiArray(data=result))
+	#pub.publish(Float64MultiArray(data=result))
 	print("done")
 	
 	
