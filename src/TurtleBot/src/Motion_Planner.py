@@ -57,7 +57,7 @@ def monitor_robot_pose():
 		y = traj_temp[1]
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
-		while distance(trajectory[trajectory_index]) >= 0.05:
+		while distance() >= 0.05:
 			rospy.sleep(0.1)
 			print("Distance: ", distance(trajectory[trajectory_index]))
 			current_position_x = rospy.wait_for_message('/gazebo/model_states', ModelStates).pose[1].position.x
@@ -67,8 +67,9 @@ def monitor_robot_pose():
 	rospy.loginfo("Reached the goal!\n") 
 
 
-def distance(trajectory_point):
-	global current_position_x, current_position_y
+def distance():
+	global current_position_x, current_position_y, trajectory, trajectory_index
+	trajectory_point = trajectory[trajectory_index]
 	return sqrt((trajectory_point[0] - current_position_x)**2 + (trajectory_point[1] - current_position_y)**2)
 
 if __name__ == '__main__':
