@@ -65,7 +65,7 @@ def monitor_robot_pose():
 			next_point = trajectory[i+1]
 			next_x, next_y = next_point 
 			while not rospy.is_shutdown():
-				istance = ((next_x - current_position_x)**2 + (next_y - current_position_y)**2)**.5
+				distance = ((next_x - current_position_x)**2 + (next_y - current_position_y)**2)**.5
 				rospy.sleep(0.1)
 				print("Distance to next point: ", distance)
 				if distance < 0.05:
