@@ -70,7 +70,6 @@ if __name__ == '__main__':
 	rospy.loginfo("Ready!\n")
 	start_goal_pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	reference_pose_pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=10)
-	rospy.Subscriber('/gazebo/model_states', ModelStates, model_states_callback)
 	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position_callback) # obtain position of robot
 	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
 	
