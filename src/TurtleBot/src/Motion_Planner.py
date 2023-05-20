@@ -59,7 +59,9 @@ def monitor_robot_pose():
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
 		while distance(trajectory[trajectory_index]) >= 0.5:
 			rospy.sleep(0.1)
+			print("Distance: ", distance(trajectory[trajectory_index]))
 		trajectory_index +=1
+		print("Trajectory index: ", trajectory_index)
 	rospy.loginfo("Reached the goal!\n") 
 
 
