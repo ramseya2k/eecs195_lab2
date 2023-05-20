@@ -47,7 +47,7 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) # x, y, theta, mode
 
 def monitor_robot_pose():
-	global trajectory, trajectory_index
+	global trajectory, trajectory_index, current_position_x, current_position_y
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1) 
 	print(trajectory)
