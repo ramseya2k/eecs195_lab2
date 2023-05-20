@@ -40,7 +40,7 @@ if __name__ == '__main__':
 			 
 		rospy.loginfo_throttle(1, "Distance to goal: {:.2f}".format(distance_to_goal(robot_x, robot_y, goal_x, goal_y)))
 			 
-		if distance_to_goal(robot_x, robot_y, goal_x, goal_y) < .1:
+		if distance_to_goal(robot_x, robot_y, goal_x, goal_y) < .05:
 			 rospy.loginfo("Robot has reached the goal!\n")
 			 goal_x, goal_y = get_goal_position()
 		rate.sleep()
