@@ -23,7 +23,7 @@ def goal_position_callback(data): # from /target_pose
 	#if trajectory:
 	#	start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
 
-def current_position(msg): # from /gazebo/model_states 
+def current_position_callback(msg): # from /gazebo/model_states 
 	global current_position_x, current_position_y
 	current_position_x = msg.pose[1].position.x
 	current_position_y = msg.pose[1].position.y
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 	start_goal_pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	reference_pose_pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=10)
 	rospy.Subscriber('/gazebo/model_states', ModelStates, model_states_callback)
-	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position) # obtain position of robot
+	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position_callback) # obtain position of robot
 	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
 	
 	#rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
