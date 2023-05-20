@@ -27,7 +27,7 @@ def map_update(information): # references
 	current_resolution = information.info.resolution
 	current_origin = information.info.origin
 	current_data = information.data
-	current_map =  np.reshape(information.data, (information.info.width, information.info.height))#[[0 for j in range(information.info.height)] for i in range(information.info.width)]
+	current_map =  np.reshape(information.data, (information.info.height, information.info.width))#[[0 for j in range(information.info.height)] for i in range(information.info.width)]
 	
 # for start_goal	
 def start_goal_callback(msg):
