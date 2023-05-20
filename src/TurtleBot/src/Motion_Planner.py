@@ -52,11 +52,17 @@ def monitor_robot_pose():
 		y = traj_temp[1]
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
-	
-		while sqrt((trajectory[i][0] - current_position_x)**2 + (trajectory[i][1] - current_position_y)**2) > 0.05:
+		reached_point = False
+		
+		while not reached_point:
+			distance sqrt((trajectory[i][0] - current_position_x)**2 + (trajectory[i][1] - current_position_y)**2)
 			rospy.sleep(0.1)
-			print("Distance: ", sqrt((trajectory[i][0] - current_position_x)**2 + (trajectory[i][1] - current_position_y)**2))
-		print("Trajectory index: ", i)
+			rospy.loginfo("Distance: ", distance)
+			if distance < 0.05:
+				reached_point = True
+		rospy.loginfo("Reahced Point({}, {})".format(x, y))
+		rospy.sleep(1) 
+		
 	rospy.loginfo("Reached the goal!\n") 
 
 if __name__ == '__main__':
