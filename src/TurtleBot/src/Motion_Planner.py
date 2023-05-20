@@ -51,7 +51,7 @@ def monitor_robot_pose():
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1) 
 	print(trajectory)
-	while trajectory_index < len(trajectory): # if this causes an issue maybe do <= or get rid of -1 
+	while trajectory_index <= len(trajectory) -1: # if this causes an issue maybe do <= or get rid of -1 
 		traj_temp = trajectory[trajectory_index]
 		x = traj_temp[0]
 		y = traj_temp[1]
