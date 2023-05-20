@@ -48,20 +48,23 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) # x, y, theta, mode
 
 def monitor_robot_pose():
+	
 	global trajectory, trajectory_index, current_position_x, current_position_y
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1) 
 	print(trajectory)
-	while trajectory_index <= len(trajectory) -1: # if this causes an issue maybe do <= or get rid of -1 
-		traj_temp = trajectory[trajectory_index]
+	
+	for i in range(len(trajectory)):
+		traj_temp = trajectory[i]
 		x = traj_temp[0]
 		y = traj_temp[1]
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
+	
 		while distance() >= 0.05:
 			rospy.sleep(0.1)
 			print("Distance: ", distance())
-		trajectory_index +=1
+		trajectory_index = i
 		print("Trajectory index: ", trajectory_index)
 	rospy.loginfo("Reached the goal!\n") 
 
