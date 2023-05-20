@@ -46,7 +46,7 @@ def monitor_robot_pose():
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1)
 	rospy.loginfo(trajectory) 
-	for i in range(len(trajectory)):
+	for point in trajectory:
 		x, y = point
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
@@ -60,18 +60,7 @@ def monitor_robot_pose():
 				reached_point = True
 		rospy.loginfo("Reahced Point({}, {})".format(x, y))
 		rospy.sleep(1)
-		
-		if i < len(trajectory) - 1:
-			next_point = trajectory[i+1]
-			next_x, next_y = next_point 
-			while not rospy.is_shutdown():
-				distance = ((next_x - current_position_x)**2 + (next_y - current_position_y)**2)**.5
-				rospy.sleep(0.1)
-				print("Distance to next point: ", distance)
-				if distance < 0.05:
-					break
-			
-		
+					
 	rospy.loginfo("Reached the goal!\n") 
 
 if __name__ == '__main__':
