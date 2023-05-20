@@ -60,17 +60,17 @@ def start_goal_callback(msg):
 def get_index_from_coordinates(x, y):
 	global current_origin
 	global current_resolution
-	x = int(round((x - current_origin.position.y) / current_resolution))
-	y = int(round((y - current_origin.position.x) / current_resolution))
-	return x, y
+	x_index = int(round((x - current_origin.position.y) / current_resolution))
+	y_index = int(round((y - current_origin.position.x) / current_resolution))
+	return x_index, y_index
 
 
 def get_coordinates_from_index(x, y):
 	global current_origin
 	global current_resolution
-	x = (y * current_resolution) + current_origin.position.y
-	y = (x * current_resolution) + current_origin.position.x
-	return x, y
+	x_real = (y * current_resolution) + current_origin.position.y
+	y_real = (x * current_resolution) + current_origin.position.x
+	return x_real, y_real
 if __name__ == '__main__':
 	try:
 		rospy.init_node('RRT_NODE', anonymous=False)
