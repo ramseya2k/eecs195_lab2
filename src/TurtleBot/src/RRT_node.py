@@ -49,12 +49,7 @@ def start_goal_callback(msg):
 		x, y = get_coordinates_from_index(path[i][0], path[i][1])
 		result.append(x)
 		result.append(y)
-	while len(result) > 2:
-		pub.publish(Float64MultiArray(data=result))
-		rospy.sleep(.1)
-		result = result[2:]
 	pub.publish(Float64MultiArray(data=result))
-	#pub.publish(Float64MultiArray(data=result))
 	print("done")
 	
 	
