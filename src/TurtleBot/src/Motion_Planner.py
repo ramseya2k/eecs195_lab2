@@ -60,6 +60,8 @@ def monitor_robot_pose():
 		while distance(trajectory[trajectory_index]) >= 0.05:
 			rospy.sleep(0.1)
 			print("Distance: ", distance(trajectory[trajectory_index]))
+			current_position_x = rospy.wait_for_message('/gazebo/model_states', ModelStates).pose[1].position.x
+			current_position_y = rospy.wait_for_message('/gazebo/model_states', ModelStates).pose[1].position.y
 		trajectory_index +=1
 		print("Trajectory index: ", trajectory_index)
 	rospy.loginfo("Reached the goal!\n") 
