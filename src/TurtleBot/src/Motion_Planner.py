@@ -28,6 +28,7 @@ def current_position(msg): # from /gazebo/model_states
 	global current_position_x, current_position_y
 	current_position_x = msg.pose[1].position.x
 	current_position_y = msg.pose[1].position.y
+	rospy.loginfo("Current position: x={}, y={}".format(current_position_x, current_position_x))
 		
 def trajectory_callback(msg): # send the first point in the trajectory to the PID and publish to reference_pose topic
 	# monitor the pose of the robot using using the /Gazebo/model_states topic 
