@@ -48,11 +48,11 @@ def monitor_robot_pose():
 	rospy.loginfo(trajectory) 
 	for point in trajectory:
 		x, y = point
-		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
-		rospy.loginfo("Moving to point ({}, {})".format(x, y))
 		reached_point = False
 		
 		while not reached_point:
+			reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
+			rospy.loginfo("Moving to point ({}, {})".format(x, y))
 			distance = ((x - current_position_x)**2 + (y - current_position_y)**2)**.5
 			rospy.sleep(0.1)
 			print("Distance: ", distance)
