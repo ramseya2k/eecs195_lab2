@@ -23,7 +23,7 @@ def goal_position_callback(data): # from /target_pose
 	#if trajectory:
 	#	start_goal_pub.publish(Float64MultiArray(data=[current_position_x, current_position_y, goal_position.x, goal_position.y])) 
 
-def current_position_callback(msg): # from /gazebo/model_states 
+def current_position(msg): # from /gazebo/model_states 
 	global current_position_x, current_position_y
 	current_position_x = msg.pose[1].position.x
 	current_position_y = msg.pose[1].position.y
@@ -41,40 +41,33 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 	#rospy.loginfo(trajectory) 
 
 def monitor_robot_pose():
-	global trajectory, current_position_x, current_position_y, goal_position
+	global trajectory, current_position_x, current_position_y
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1)
-	rospy.loginfo(trajectory)
-	for point in trajectory:
-		x, y = point
+	rospy.loginfo(trajectory) 
+	for i in range(len(trajectory)):
+		traj_temp = trajectory[i]
+		x = traj_temp[0]
+		y = traj_temp[1]
 		reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
-		reached_point = False
-		while not reached_point:
-			distance = sqrt((x - current_position_x)**2 + (y - current_position_y)**2)
-			#distance = sqrt((goal_position.x - current_position_x)**2 + (goal_position.y - current_position_y)**2)
+		while sqrt((trajectory[i][0] - current_position_x)**2 + (trajectory[i][1] - current_position_y)**2) > 0.05:
 			rospy.sleep(0.1)
-			print("Distance: ", distance)
-			if distance < 0.05:
-				reached_point = True
-		rospy.loginfo("Reahced Point({}, {})".format(x, y))
-		rospy.sleep(1)
-		break
-					
-	rospy.loginfo("Reached the goal!\n")
-	
+			print("Distance: ", sqrt((trajectory[i][0] - current_position_x)**2 + (trajectory[i][1] - current_position_y)**2))
+		print("Trajectory index: ", i)
+	rospy.loginfo("Reached the goal!\n") 
+
 if __name__ == '__main__':
 	rospy.init_node('Motion_Planner', anonymous=False)
 	rospy.loginfo("Ready!\n")
 	start_goal_pub = rospy.Publisher('/start_goal', Float64MultiArray, queue_size=10)
 	reference_pose_pub = rospy.Publisher('/reference_pose', Float64MultiArray, queue_size=10)
-	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position_callback) # obtain position of robot
+	rospy.Subscriber('/gazebo/model_states', ModelStates, current_position) # obtain position of robot
 	rospy.Subscriber('/trajectory', Float64MultiArray, trajectory_callback)
-	
 	#rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
 	rospy.Subscriber('/target_pose', PoseStamped, goal_position_callback) # goal position
 	monitor_robot_pose()
-	reference_pose_pub.publish(Float64MultiArray(data=[None, None, 0, None])) #x, y, theta, mode
+
 
 '''
 # THIS IS FOR PART 2
