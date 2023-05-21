@@ -51,7 +51,7 @@ def monitor_robot_pose():
 		rospy.loginfo("Moving to point ({}, {})".format(x, y))
 		reached_point = False
 		while not reached_point:
-			distance = sqrt((trajectory[i][0] - current_position_x)**2 + (trajectory[i][1] - current_position_y)**2)
+			distance = sqrt((x - current_position_x)**2 + (y - current_position_y)**2)
 			#distance = sqrt((goal_position.x - current_position_x)**2 + (goal_position.y - current_position_y)**2)
 			rospy.sleep(0.1)
 			print("Distance: ", distance)
