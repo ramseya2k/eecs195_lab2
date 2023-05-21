@@ -58,6 +58,8 @@ def monitor_robot_pose():
 			print("Distance: ", distance)
 			if distance < 0.05:
 				reached_point = True
+			current_position_x = rospy.wait_for_message('/gazebo/model_states', ModelStates).pose[1].position.x
+			current_position_y = rospy.wait_for_message('/gazebo/model_states', ModelStates).pose[1].position.y
 		rospy.loginfo("Reahced Point({}, {})".format(x, y))
 		rospy.sleep(1)
 					
