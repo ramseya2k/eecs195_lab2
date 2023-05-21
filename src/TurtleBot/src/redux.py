@@ -178,6 +178,9 @@ class PID:
 		        rospy.loginfo("Waiting for input...\n")
 			while self.mode is None:
 				self.rate.sleep()
+				vel_msg.linear.x = 0
+				vel_msg.angular.z = 0
+				self.velocity_publisher.publish(vel_msg)
 if __name__ == '__main__':
     try:
         x = PID()
