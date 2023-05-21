@@ -42,7 +42,7 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 
 def monitor_robot_pose():
 	global trajectory, current_position_x, current_position_y
-	while not rospy.is_shutdown() and trajectories:
+	while not rospy.is_shutdown() and trajectory:
 		temp = trajectory.pop()
 		for point in temp:
 			x, y = point
