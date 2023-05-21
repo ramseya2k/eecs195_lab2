@@ -41,7 +41,24 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 	#rospy.loginfo(trajectory) 
 
 def monitor_robot_pose():
-	
+	global trajectory, current_position_x, current_position_y
+	while not rospy.is_shutdown() and trajectories:
+		temp = trajectory.pop()
+		for point in temp:
+			x, y = point
+			reached_point = False
+			while not reached_point:
+				reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1]))
+				rospy.loginfo("Moving to point ({}, {})".format(x, y))
+				distance = ((x - current_position_x)**2 + (y - current_position_y)**2)**.5
+				rospy.sleep(0.1)
+				print("Distance: ", distance)
+				if distance < 0.05:
+					reached_point = True
+			rospy.loginfo("Reahced Point({}, {})".format(x, y))
+			rospy.sleep(1)		
+		rospy.loginfo("Reached the goal!\n") 
+	'''
 	global trajectory, current_position_x, current_position_y
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1)
@@ -62,7 +79,7 @@ def monitor_robot_pose():
 		rospy.sleep(1)
 					
 	rospy.loginfo("Reached the goal!\n") 
-
+	'''
 if __name__ == '__main__':
 	rospy.init_node('Motion_Planner', anonymous=False)
 	rospy.loginfo("Ready!\n")
