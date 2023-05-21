@@ -53,9 +53,9 @@ def monitor_robot_pose():
 			print("Distance: ", distance)
 			if distance < 0.05:
 				reached_point = True
-			rospy.loginfo("Reahced Point({}, {})".format(x, y))
-			rospy.sleep(1)
-			trajectory.pop(0)
+		rospy.loginfo("Reahced Point({}, {})".format(x, y))
+		rospy.sleep(1)
+		trajectory.pop(0)
 	rospy.loginfo("Reached the goal!\n")
 	'''
 	global trajectory, current_position_x, current_position_y
