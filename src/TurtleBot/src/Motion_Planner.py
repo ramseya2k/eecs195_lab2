@@ -58,6 +58,7 @@ def monitor_robot_pose():
 			print("Distance: ", distance)
 			if distance < 0.05:
 				reached_point = True
+				exit_goal = True 
 		rospy.loginfo("Reahced Point({}, {})".format(x, y))
 		rospy.sleep(1)
 					
