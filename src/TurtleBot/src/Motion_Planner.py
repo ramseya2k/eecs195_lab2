@@ -62,6 +62,7 @@ def monitor_robot_pose():
 		rospy.sleep(1)
 					
 	rospy.loginfo("Reached the goal!\n")
+	reference_pose_pub.publish(Float64MultiArray(data=[None, None, 0, None])) #x, y, theta, mode
 	
 if __name__ == '__main__':
 	rospy.init_node('Motion_Planner', anonymous=False)
@@ -76,7 +77,6 @@ if __name__ == '__main__':
 	while not rospy.is_shutdown():
 		monitor_robot_pose()
 		rospy.sleep(1)
-		reference_pose_pub.publish(Float64MultiArray(data=[None, None, 0, None])) #x, y, theta, mode
 
 '''
 # THIS IS FOR PART 2
