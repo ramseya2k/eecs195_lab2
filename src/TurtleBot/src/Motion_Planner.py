@@ -42,16 +42,14 @@ def trajectory_callback(msg): # send the first point in the trajectory to the PI
 
 def monitor_robot_pose():
 	global trajectory, current_position_x, current_position_y, goal_position
-	exit_goal = False
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1)
-	rospy.loginfo(trajectory) 
-	reference_pose_pub.publish(Float64MultiArray(data=[float(trajectory[0][0]), float(trajectory[0][1]), 0, 1])) #x, y, theta, mode
-	for point in enumerate(trajectory[1:], start=1):
-		if exit_goal:
-			break
+	rospy.loginfo(trajectory)
+	reached_point = False
+	for point in trajectory:
 		x, y = point
-		reached_point = False
+		if reached_point:
+			break
 		while not reached_point:
 			reference_pose_pub.publish(Float64MultiArray(data=[x, y, 0, 1])) #x, y, theta, mode
 			distance = ((goal_position.x - current_position_x)**2 + (goal_position.y - current_position_y)**2)**.5
@@ -59,7 +57,6 @@ def monitor_robot_pose():
 			print("Distance: ", distance)
 			if distance < 0.05:
 				reached_point = True
-				exit_goal = True 
 		rospy.loginfo("Reahced Point({}, {})".format(x, y))
 		rospy.sleep(1)
 					
@@ -76,9 +73,8 @@ if __name__ == '__main__':
 	
 	#rospy.wait_for_message('/target_pose', PoseStamped) # waits for the first goal
 	rospy.Subscriber('/target_pose', PoseStamped, goal_position_callback) # goal position
-	while not rospy.is_shutdown():
-		monitor_robot_pose()
-		rospy.sleep(1)
+	monitor_robot_pose()
+	reference_pose_pub.publish(Float64MultiArray(data=[None, None, 0, None])) #x, y, theta, mode
 
 '''
 # THIS IS FOR PART 2
