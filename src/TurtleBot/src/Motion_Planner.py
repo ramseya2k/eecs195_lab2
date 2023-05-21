@@ -59,9 +59,9 @@ def monitor_robot_pose():
 				reached_point = True
 		rospy.loginfo("Reahced Point({}, {})".format(x, y))
 		rospy.sleep(1)
+		break
 					
 	rospy.loginfo("Reached the goal!\n")
-	reference_pose_pub.publish(Float64MultiArray(data=[None, None, 0, None])) #x, y, theta, mode
 	
 if __name__ == '__main__':
 	rospy.init_node('Motion_Planner', anonymous=False)
