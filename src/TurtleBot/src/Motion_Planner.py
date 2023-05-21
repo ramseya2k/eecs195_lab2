@@ -46,7 +46,8 @@ def monitor_robot_pose():
 	while not trajectory: # waits until there is a trajectory 
 		rospy.sleep(0.1)
 	rospy.loginfo(trajectory) 
-	for point in trajectory:
+	reference_pose_pub.publish(Float64MultiArray(data=[trajectory[0][0], trajectory[0][1], 0, 1])) #x, y, theta, mode
+	for point in enumrate(trajectory[1:], start=1):
 		if exit_goal:
 			break
 		x, y = point
