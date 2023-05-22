@@ -126,7 +126,7 @@ class Controller:
         while not rospy.is_shutdown():
                 move_cmd = Twist()
 		
-		elif self.mode == 1:
+		if self.mode == 1:
 			while self.calc_distance() >= 0.05:
 				move_cmd.linear.x = self.PID_linear()
 				move_cmd.angular.z = self.PID_angular()
@@ -141,7 +141,7 @@ class Controller:
 			self.integral_prev_angular = 0
 			self.mode = None
 
-        if self.mode == 0:
+        	elif self.mode == 0:
 			while abs(self.angle_calculation() - self.pose_theta) >= 0.005:
 				move_cmd.angular.z = self.PID_angular() # face the reference point 
 				self.cmd_vel.publish(move_cmd)
