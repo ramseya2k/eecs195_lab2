@@ -11,16 +11,14 @@ import numpy as np
 import os
 import time
 
-
-
-class PID:
+class Controller:
     def __init__(self):
         # Creates a node with name 'PID_Control_US' and make sure it is a
         # unique node (using anonymous=True).
         rospy.init_node('PID_Control_US', anonymous=False)
 
-        # Publisher which will publish to the topic 'cmd_vel'.
-        self.velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=5)
+        # Publisher which will publish to the topic 'cmd_vell'.
+        self.cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=5)
 
         # A subscriber to the topic '/gazebo/model_states'. self.update_pose is called
         # when a message of type ModelStates is received.
@@ -39,16 +37,16 @@ class PID:
         self.time_discr = 0.001 #.01
 
         # PID parameters for linear velocity
-        self.error_prior_linear = 0
-        self.integral_prior_linear = 0
-        self.Kp_gain_linear = 1
-        self.Ki_gain_linear = .1
-        self.Kd_gain_linear = 0
+        self.error_prev_linear = 0
+        self.integral_prev_linear = 0
+        self.Kp_linear = 1
+        self.Ki_linear = .1
+        self.Kd_linear = 0
 
         # PID parameters for angular velocity
-        self.error_prior_angular = 0
-        self.integral_prior_angular = 0
-        self.Kp_gain_angular = 1
+        self.error_prev_angular = 0
+        self.integral_prev_angular = 0
+        self.Kp_angular = 1
         self.Ki_gain_angular = .1
         self.Kd_gain_angular = 0
 
@@ -67,123 +65,120 @@ class PID:
         self.mode = data.data[3]
 	
 
-    def euclidean_distance(self):
+    def calc_distance(self):
         """Euclidean distance between current pose and the goal."""
-        return sqrt(pow((self.goal_x - self.pose_x), 2) + pow((self.goal_y - self.pose_y), 2)) #+ pow((self.goal_theta - self.pose_theta), 2))
-
-    def steering_angle(self):
+        #return sqrt(pow((self.goal_x - self.pose_x), 2) + pow((self.goal_y - self.pose_y), 2)) #+ pow((self.goal_theta - self.pose_theta), 2))
+        return ((self.goal_x - self.pose_x)**2 + (self.goal_y - self.pose_y)**2)**.5
+    
+    def angle_calculation(self):
         return atan2(self.goal_y - self.pose_y, self.goal_x - self.pose_x)
 
-    def proportional_linear_vel(self):
-        return min(self.Kp_gain_linear * self.euclidean_distance(), 0.1)
+    def proportional_linear(self):
+        return min(self.Kp_linear * self.calc_distance(), 0.1)
 
-    def derivative_linear_vel(self):
-        derivate_linear_vel = (self.euclidean_distance() - self.error_prior_linear) / self.time_discr
-        ud_linear = self.Kd_gain_linear * derivate_linear_vel
-        self.error_prior_linear = self.euclidean_distance()  # update the error prior 
-        return ud_linear
+    def derivative_linear(self):
+        derivate_linear_vel = (self.calc_distance() - self.error_prev_linear) / self.time_discr
+        updated_linear = self.Kd_linear * derivate_linear_vel
+        self.error_prev_linear = self.calc_distance()  # update the error prior 
+        return updated_linear
 
-    def proportional_angular_vel(self): 
-        error_angle = self.steering_angle() - self.pose_theta
-        return min(self.Kp_gain_angular * error_angle, 0.1)
+    def proportional_angular(self): 
+        #error_angle = self.angle_calculation() - self.pose_theta
+        return min(self.Kp_angular * (self.angle_calculation() - self.pose_theta), 0.1)
 
-    def derivative_angular_vel(self):
-        error_angle = self.steering_angle() - self.pose_theta
-        derivative_angular_vel = (error_angle - self.error_prior_angular) / self.time_discr
-        ud_angular = self.Kd_gain_angular * derivative_angular_vel
+    def derivative_angular(self):
+        error_angle = self.angle_calculation() - self.pose_theta
+        derivative_angular = (error_angle - self.error_prev_angular) / self.time_discr
+        updated_angular = self.Kd_gain_angular * derivative_angular
         # update the error prior
-	self.error_prior_angular = error_angle 
-        return ud_angular
+	self.error_prev_angular = error_angle 
+        return updated_angular
 
     def integral_angular_vel(self):
-        error_angle = self.steering_angle() - self.pose_theta
-        integral_angular_vel = self.integral_prior_angular +error_angle * self.time_discr
-        ui_angular = self.Ki_gain_angular * integral_angular_vel
+        error_angle = self.angle_calculation() - self.pose_theta
+        integral_angular_vel = self.integral_prev_angular +error_angle * self.time_discr
+        updated_angular = self.Ki_gain_angular * integral_angular_vel
         # update the integral prior 
-        self.integral_prior_angular = integral_angular_vel
-        return ui_angular
+        self.integral_prev_angular = integral_angular_vel
+        return updated_angular
 
-    def PID_controller_linear(self):
-        pid_control_linear = self.proportional_linear_vel() + self.derivative_linear_vel() + self.integral_linear_vel()
+    def PID_linear(self):
+        pid = self.proportional_linear() + self.derivative_linear() + self.integral_vel()
         # set error priors for linear to 0 
-        self.error_prior_linear = 0
-        self.integral_prior_linear = 0
-        return pid_control_linear
+        self.error_prev_linear = 0
+        self.integral_prev_linear = 0
+        return pid
 
-    def PID_controller_angular(self):
-        pid_control_angular = self.proportional_angular_vel() + self.derivative_angular_vel() + self.integral_angular_vel()
+    def PID_angular(self):
+        pid_control_angular = self.proportional_angular() + self.derivative_angular() + self.integral_angular_vel()
         # update error priors for angular to 0
-        self.error_prior_angular = 0
-        self.integral_prior_angular = 0
+        self.error_prev_angular = 0
+        self.integral_prev_angular = 0
         return pid_control_angular
  
-    def integral_linear_vel(self):
-        integral_linear_vel = self.integral_prior_linear + self.euclidean_distance() * self.time_discr
-        ui_linear = self.Ki_gain_linear * integral_linear_vel
-        self.integral_prior_linear = integral_linear_vel
-        return ui_linear
+    def integral_vel(self):
+        integral_vel = self.integral_prev_linear + self.calc_distance() * self.time_discr
+        updated_linear = self.Ki_linear * integral_vel
+        self.integral_prev_linear = integral_vel
+        return updated_linear
 
-    def move2goal(self):
+    def goal(self):
         while not rospy.is_shutdown():
-                vel_msg = Twist()
-		if self.mode == 0:
-			while abs(self.steering_angle() - self.pose_theta) >= 0.005:
-				vel_msg.angular.z = self.PID_controller_angular() # face the reference point 
-				self.velocity_publisher.publish(vel_msg)
-				self.rate.sleep()
-			rospy.loginfo("Faced the reference point!\n")
-			vel_msg.angular.z = 0
-			self.velocity_publisher.publish(vel_msg)
-			
-			while self.euclidean_distance() >= .15:
-				vel_msg.linear.x = self.PID_controller_linear() # go to the reference point 
-				self.velocity_publisher.publish(vel_msg)
-				self.rate.sleep() 
-				
-			rospy.loginfo("Arrived at reference point!\n")
-			vel_msg.linear.x = 0
-			self.velocity_publisher.publish(vel_msg)
-			
-			while abs(self.steering_angle() - self.pose_theta) >= 0.005:
-				vel_msg.angular.z = self.PID_controller_angular()
-				self.velocity_publisher.publish(vel_msg)
-				self.rate.sleep()
-				
-			rospy.loginfo("Adjusted angle!\n")
-			vel_msg.angular.z = 0 
-			self.velocity_publisher.publish(vel_msg)
-			self.error_prior_linear = 0
-			self.integral_prior_linear = 0
-			self.error_prior_angular = 0
-			self.integral_prior_angular = 0
-			self.mode = None
+                move_cmd = Twist()
 		
 		elif self.mode == 1:
-			rospy.loginfo("Moving to goal...\n")
-			while self.euclidean_distance() >= 0.05:
-				vel_msg.linear.x = self.PID_controller_linear()
-				vel_msg.angular.z = self.PID_controller_angular()
-				self.velocity_publisher.publish(vel_msg)
+			while self.calc_distance() >= 0.05:
+				move_cmd.linear.x = self.PID_linear()
+				move_cmd.angular.z = self.PID_angular()
+				self.cmd_vel.publish(move_cmd)
 				self.rate.sleep()
-			rospy.loginfo("Arrived at goal!\n")
-			vel_msg.linear.x = 0
-			vel_msg.angular.z = 0
-			self.velocity_publisher.publish(vel_msg)
-			self.error_prior_linear = 0
-			self.integral_prior_linear = 0
-			self.error_prior_angular = 0
-			self.integral_prior_angular = 0
-			self.mode = None		
+			move_cmd.linear.x = 0
+			move_cmd.angular.z = 0
+			self.cmd_vel.publish(move_cmd)
+			self.error_prev_linear = 0
+			self.integral_prev_linear = 0
+			self.error_prev_angular = 0
+			self.integral_prev_angular = 0
+			self.mode = None
+
+        if self.mode == 0:
+			while abs(self.angle_calculation() - self.pose_theta) >= 0.005:
+				move_cmd.angular.z = self.PID_angular() # face the reference point 
+				self.cmd_vel.publish(move_cmd)
+				self.rate.sleep()
+			move_cmd.angular.z = 0
+			self.cmd_vel.publish(move_cmd)
+			
+			while self.calc_distance() >= .15:
+				move_cmd.linear.x = self.PID_linear() # go to the reference point 
+				self.cmd_vel.publish(move_cmd)
+				self.rate.sleep() 
+				
+			move_cmd.linear.x = 0
+			self.cmd_vel.publish(move_cmd)
+			
+			while abs(self.angle_calculation() - self.pose_theta) >= 0.005:
+				move_cmd.angular.z = self.PID_angular()
+				self.cmd_vel.publish(move_cmd)
+				self.rate.sleep()
+				
+			move_cmd.angular.z = 0 
+			self.cmd_vel.publish(move_cmd)
+			self.error_prev_linear = 0
+			self.integral_prev_linear = 0
+			self.error_prev_angular = 0
+			self.integral_prev_angular = 0
+			self.mode = None    		
 		else:
-		        rospy.loginfo("Waiting for input...\n")
+		        rospy.loginfo("Waiting for mode to be 0 or 1 to continue.")
 			while self.mode is None:
 				self.rate.sleep()
-				vel_msg.linear.x = 0
-				vel_msg.angular.z = 0
-				self.velocity_publisher.publish(vel_msg)
+				move_cmd.linear.x = 0
+				move_cmd.angular.z = 0
+				self.cmd_vel.publish(move_cmd)
 if __name__ == '__main__':
     try:
-        x = PID()
-        x.move2goal()
+        x = Controller()
+        x.goal()
     except:
         rospy.ROSInterruptException
