@@ -15,7 +15,7 @@ from math import sqrt, sin, cos, atan2, ceil, floor
 
 scan = LaserScan()
 omap = OccupancyGrid()
-gruth = LinkStates()
+gtruth = ModelStates()
 
 
 def update_scan(data):
