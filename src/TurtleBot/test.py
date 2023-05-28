@@ -45,9 +45,10 @@ def talker():
 	route = [] 
 	points_visited = [] 
 	car_name_index = 0
+	carname = rospy.get_param('TURTLEBOT3_MODEL') + "::base_footprint"
 
 	for i in range(len(gtruth.name)):
-		if gtruth.name[i] == rospy.get_param('TURTLEBOT3_MODEL') + "::base_footprint":
+		if gtruth.name[i] == carname:
 			print(gtruth.name[i])
 			car_name_index = i
 			break
