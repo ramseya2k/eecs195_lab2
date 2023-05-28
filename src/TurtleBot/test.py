@@ -34,7 +34,7 @@ def update_ground_truth(data):
 def talker():
 	algorithm_end = 0 
 	pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-	rospy.init_node('explore_map', anonymouse=False)
+	rospy.init_node('explore_map', anonymous=False)
 	rospy.Subscriber('/scan', LaserScan, update_scan)
 	rospy.Subscriber('/map', OccupancyGrid, update_omap)
 	rospy.Subscriber('/gazebo/model_states', ModelStates, update_ground_truth)
