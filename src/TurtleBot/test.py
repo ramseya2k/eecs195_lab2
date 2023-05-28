@@ -5,6 +5,7 @@ from geometry_msgs.msg import PoseStamped, Twist
 from nav_msgs.msg import OccupancyGrid
 
 from gazebo_msgs.msg import ModelStates
+import os
 
 import tf
 import random
@@ -45,8 +46,8 @@ def talker():
 	route = [] 
 	points_visited = [] 
 	car_name_index = 0
-	carname = rospy.get_param('TURTLEBOT3_MODEL') + "::base_footprint"
-
+	#carname = rospy.get_param('TURTLEBOT3_MODEL') + "::base_footprint"
+	carname = os.environ['TURTLEBOT3_MODEL'] + "::base_footprint"
 	for i in range(len(gtruth.name)):
 		if gtruth.name[i] == carname:
 			print(gtruth.name[i])
