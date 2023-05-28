@@ -48,7 +48,7 @@ def talker():
 
 	for i in range(len(gtruth.name)):
 		if gtruth.name[i] == rospy.get_param('TURTLEBOT3_MODEL') + "::base_footprint":
-			print(gruth.name[i])
+			print(gtruth.name[i])
 			car_name_index = i
 			break
 
